@@ -207,7 +207,8 @@ io.on('connection', (socket) => {
         yellow: []
       },
       currentTurn: null,
-      gamePhase: 'waiting'
+      gamePhase: 'waiting',
+      lastMoveDiscardInfo: null // To track the card just discarded in the current turn
     };
     
     // Associate player with game
@@ -385,6 +386,13 @@ io.on('connection', (socket) => {
     // Add card to discard pile
     game.discardPiles[color].push(discardedCard);
     
+    // Store info about this discard for the current turn
+    game.lastMoveDiscardInfo = {
+      playerId: persistentPlayerId,
+      card: { color: discardedCard.color, value: discardedCard.value }, // Store a copy of card details
+      pileColor: color // The color of the pile it was discarded to
+    };
+    
     // Notify all players
     io.to(gameId).emit('cardDiscarded', {
       playerId: persistentPlayerId, // Send persistentPlayerId
@@ -428,9 +436,27 @@ io.on('connection', (socket) => {
       
       drawnCard = game.deck.pop();
     } else if (source === 'discard') {
+      // Check if trying to draw the card just discarded this turn by the same player
+      if (game.lastMoveDiscardInfo &&
+          game.lastMoveDiscardInfo.playerId === persistentPlayerId &&
+          game.lastMoveDiscardInfo.pileColor === color) {
+        
+        const pile = game.discardPiles[color];
+        // Ensure the pile is not empty and the top card matches the one recorded as just discarded
+        if (pile.length > 0) {
+            const topCardOnPile = pile[pile.length - 1];
+            if (topCardOnPile.color === game.lastMoveDiscardInfo.card.color && 
+                topCardOnPile.value === game.lastMoveDiscardInfo.card.value) {
+                
+                socket.emit('error', { message: 'You cannot draw the card you just discarded this turn.' });
+                return;
+            }
+        }
+      }
+
       // Draw from discard pile
-      if (!color || game.discardPiles[color].length === 0) {
-        socket.emit('error', { message: 'Invalid discard pile' });
+      if (!color || !game.discardPiles[color] || game.discardPiles[color].length === 0) { // Added check for existence of discardPiles[color]
+        socket.emit('error', { message: 'Invalid or empty discard pile' });
         return;
       }
       
@@ -443,6 +469,9 @@ io.on('connection', (socket) => {
     // Add card to hand
     playerData.hand.push(drawnCard);
     playerData.hand = sortHand(playerData.hand); // Sort the hand after drawing
+
+    // Clear the last discard info as a draw action has been successfully completed
+    game.lastMoveDiscardInfo = null;
 
     // Notify all players
     io.to(gameId).emit('cardDrawn', {
