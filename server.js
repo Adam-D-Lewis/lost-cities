@@ -20,9 +20,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+const { networkInterfaces } = require('os'); // Moved for consistency
+
 // Game state
-const games = {};
-const players = {};
+const games = {}; // Stores game states, keyed by gameId
+const players = {}; // Maps current socket.id to { gameId, persistentPlayerId }
 
 // Helper functions
 function createDeck() {
@@ -107,21 +109,46 @@ function getGameStateForPlayer(gameId, playerId) {
   const game = games[gameId];
   if (!game) return null;
   
-  const otherPlayerId = Object.keys(game.players).find(id => id !== playerId);
+  const playerState = game.players[playerId];
+  if (!playerState) return null; // Player not found in game
+
+  const opponentId = Object.keys(game.players).find(id => id !== playerId);
+  const opponentState = opponentId ? game.players[opponentId] : null;
   
   return {
-    currentTurn: game.currentTurn,
+    currentTurn: game.currentTurn, // This will be a persistentPlayerId
     gamePhase: game.gamePhase,
-    hand: game.players[playerId].hand,
-    playerExpeditions: game.players[playerId].expeditions,
-    opponentExpeditions: otherPlayerId ? game.players[otherPlayerId].expeditions : {},
+    hand: playerState.hand,
+    playerExpeditions: playerState.expeditions,
+    opponentExpeditions: opponentState ? opponentState.expeditions : {},
     discardPiles: game.discardPiles,
     deckCount: game.deck.length,
-    playerScore: calculateScore(game.players[playerId].expeditions),
-    opponentScore: otherPlayerId ? calculateScore(game.players[otherPlayerId].expeditions) : 0,
-    playerName: game.players[playerId].name,
-    opponentName: otherPlayerId ? game.players[otherPlayerId].name : 'Opponent'
+    playerScore: calculateScore(playerState.expeditions),
+    opponentScore: opponentState ? calculateScore(opponentState.expeditions) : 0,
+    playerName: playerState.name,
+    opponentName: opponentState ? opponentState.name : 'Opponent'
+    // Note: The client's own persistentPlayerId is already known by the client or sent during join/create/reconnect.
   };
+}
+
+// Send game state to a single player
+function sendGameStateToPlayer(gameId, persistentPlayerId, targetSocketId) {
+  const playerGameState = getGameStateForPlayer(gameId, persistentPlayerId);
+  if (playerGameState && targetSocketId) {
+    io.to(targetSocketId).emit('gameState', playerGameState);
+  }
+}
+
+// Send game state to all players in a game
+function sendGameStateToPlayers(gameId) {
+  const game = games[gameId];
+  if (!game) return;
+  
+  Object.values(game.players).forEach(player => {
+    if (player.currentSocketId) { // Only send to connected players
+      sendGameStateToPlayer(gameId, player.id, player.currentSocketId);
+    }
+  });
 }
 
 // Socket.io event handlers
@@ -130,18 +157,19 @@ io.on('connection', (socket) => {
   
   // Create a new game
   socket.on('createGame', (data) => {
-    const playerId = socket.id;
+    const persistentPlayerId = socket.id; // Use initial socket.id as persistentPlayerId
     const gameId = `game_${Date.now()}`;
     const playerName = data.playerName || 'Player 1';
     
     // Create new game
     games[gameId] = {
       id: gameId,
-      host: playerId,
+      host: persistentPlayerId, // Store persistentPlayerId of host
       players: {
-        [playerId]: {
-          id: playerId,
+        [persistentPlayerId]: {
+          id: persistentPlayerId, // Store persistentPlayerId
           name: playerName,
+          currentSocketId: socket.id, // Store current socket for communication
           hand: [],
           expeditions: {
             red: [],
@@ -165,26 +193,26 @@ io.on('connection', (socket) => {
     };
     
     // Associate player with game
-    players[playerId] = {
+    players[socket.id] = { // Map current socket.id
       gameId,
-      name: playerName
+      persistentPlayerId
     };
     
     // Join the game room
     socket.join(gameId);
     
-    console.log(`Game created: ${gameId}, Host: ${playerId}`);
+    console.log(`Game created: ${gameId}, Host: ${persistentPlayerId} (Socket: ${socket.id})`);
     
     // Notify client
     socket.emit('gameCreated', {
       gameId,
-      playerId
+      playerId: persistentPlayerId // Send persistentPlayerId to client
     });
   });
   
   // Join an existing game
   socket.on('joinGame', (data) => {
-    const playerId = socket.id;
+    const persistentPlayerId = socket.id; // Use initial socket.id as persistentPlayerId
     const playerName = data.playerName || 'Player 2';
     
     // Find an available game
@@ -197,12 +225,13 @@ io.on('connection', (socket) => {
     
     const game = availableGames[0];
     const gameId = game.id;
-    const hostId = game.host;
+    const hostPersistentId = game.host;
     
     // Add player to game
-    game.players[playerId] = {
-      id: playerId,
+    game.players[persistentPlayerId] = {
+      id: persistentPlayerId, // Store persistentPlayerId
       name: playerName,
+      currentSocketId: socket.id, // Store current socket for communication
       hand: [],
       expeditions: {
         red: [],
@@ -214,28 +243,31 @@ io.on('connection', (socket) => {
     };
     
     // Associate player with game
-    players[playerId] = {
+    players[socket.id] = { // Map current socket.id
       gameId,
-      name: playerName
+      persistentPlayerId
     };
     
     // Join the game room
     socket.join(gameId);
     
-    console.log(`Player ${playerId} joined game ${gameId}`);
+    console.log(`Player ${persistentPlayerId} (Socket: ${socket.id}) joined game ${gameId}`);
     
     // Notify client
     socket.emit('gameJoined', {
       gameId,
-      playerId,
-      hostName: game.players[hostId].name
+      playerId: persistentPlayerId, // Send persistentPlayerId to client
+      hostName: game.players[hostPersistentId].name
     });
     
     // Notify host
-    socket.to(hostId).emit('playerJoined', {
-      playerId,
-      playerName
-    });
+    const hostPlayer = game.players[hostPersistentId];
+    if (hostPlayer && hostPlayer.currentSocketId) {
+      socket.to(hostPlayer.currentSocketId).emit('playerJoined', {
+        playerId: persistentPlayerId, // Send persistentPlayerId
+        playerName
+      });
+    }
     
     // If we now have 2 players, start the game
     if (Object.keys(game.players).length === 2) {
@@ -245,21 +277,21 @@ io.on('connection', (socket) => {
   
   // Play a card
   socket.on('playCard', (data) => {
-    const playerId = socket.id;
-    const player = players[playerId];
-    
-    if (!player) return;
-    
-    const gameId = player.gameId;
+    const playerInfo = players[socket.id];
+    if (!playerInfo) {
+      socket.emit('error', { message: 'Player not recognized.' });
+      return;
+    }
+    const { gameId, persistentPlayerId } = playerInfo;
     const game = games[gameId];
     
-    if (!game || game.currentTurn !== playerId || game.gamePhase !== 'selectCard') {
-      socket.emit('error', { message: 'Invalid move' });
+    if (!game || game.currentTurn !== persistentPlayerId || game.gamePhase !== 'selectCard') {
+      socket.emit('error', { message: 'Invalid move (not your turn or wrong game phase).' });
       return;
     }
     
     const { cardIndex, target } = data;
-    const playerData = game.players[playerId];
+    const playerData = game.players[persistentPlayerId];
     
     // Check if card index is valid
     if (cardIndex < 0 || cardIndex >= playerData.hand.length) {
@@ -293,7 +325,7 @@ io.on('connection', (socket) => {
     
     // Notify all players
     io.to(gameId).emit('cardPlayed', {
-      playerId,
+      playerId: persistentPlayerId, // Send persistentPlayerId
       card: playedCard,
       target
     });
@@ -307,21 +339,21 @@ io.on('connection', (socket) => {
   
   // Discard a card
   socket.on('discardCard', (data) => {
-    const playerId = socket.id;
-    const player = players[playerId];
-    
-    if (!player) return;
-    
-    const gameId = player.gameId;
+    const playerInfo = players[socket.id];
+    if (!playerInfo) {
+      socket.emit('error', { message: 'Player not recognized.' });
+      return;
+    }
+    const { gameId, persistentPlayerId } = playerInfo;
     const game = games[gameId];
     
-    if (!game || game.currentTurn !== playerId || game.gamePhase !== 'selectCard') {
-      socket.emit('error', { message: 'Invalid move' });
+    if (!game || game.currentTurn !== persistentPlayerId || game.gamePhase !== 'selectCard') {
+      socket.emit('error', { message: 'Invalid move (not your turn or wrong game phase).' });
       return;
     }
     
     const { cardIndex, color } = data;
-    const playerData = game.players[playerId];
+    const playerData = game.players[persistentPlayerId];
     
     // Check if card index is valid
     if (cardIndex < 0 || cardIndex >= playerData.hand.length) {
@@ -337,7 +369,7 @@ io.on('connection', (socket) => {
     
     // Notify all players
     io.to(gameId).emit('cardDiscarded', {
-      playerId,
+      playerId: persistentPlayerId, // Send persistentPlayerId
       card: discardedCard,
       color
     });
@@ -351,21 +383,21 @@ io.on('connection', (socket) => {
   
   // Draw a card
   socket.on('drawCard', (data) => {
-    const playerId = socket.id;
-    const player = players[playerId];
-    
-    if (!player) return;
-    
-    const gameId = player.gameId;
+    const playerInfo = players[socket.id];
+    if (!playerInfo) {
+      socket.emit('error', { message: 'Player not recognized.' });
+      return;
+    }
+    const { gameId, persistentPlayerId } = playerInfo;
     const game = games[gameId];
     
-    if (!game || game.currentTurn !== playerId || game.gamePhase !== 'drawCard') {
-      socket.emit('error', { message: 'Invalid move' });
+    if (!game || game.currentTurn !== persistentPlayerId || game.gamePhase !== 'drawCard') {
+      socket.emit('error', { message: 'Invalid move (not your turn or wrong game phase).' });
       return;
     }
     
-    const { source, color } = data;
-    const playerData = game.players[playerId];
+    const { source, color } = data; // color is for discard pile source
+    const playerData = game.players[persistentPlayerId];
     
     let drawnCard;
     
@@ -395,37 +427,38 @@ io.on('connection', (socket) => {
     
     // Notify all players
     io.to(gameId).emit('cardDrawn', {
-      playerId,
+      playerId: persistentPlayerId, // Send persistentPlayerId
       source,
-      color
+      color // color of the discard pile drawn from, if applicable
     });
     
     // Check if game is over
     if (isGameOver(game)) {
       // Calculate final scores
-      const scores = {};
-      Object.keys(game.players).forEach(id => {
-        scores[id] = calculateScore(game.players[id].expeditions);
+      const finalScores = {};
+      Object.keys(game.players).forEach(pId => {
+        finalScores[pId] = calculateScore(game.players[pId].expeditions);
       });
       
       // Notify all players
-      io.to(gameId).emit('gameOver', { scores });
+      io.to(gameId).emit('gameOver', { scores: finalScores });
       
-      // Clean up game
-      delete games[gameId];
-      Object.keys(players).forEach(id => {
-        if (players[id].gameId === gameId) {
-          delete players[id];
+      // Clean up game (and associated player mappings)
+      Object.keys(game.players).forEach(pId => {
+        const playerSocketId = game.players[pId].currentSocketId;
+        if (playerSocketId && players[playerSocketId]) {
+          delete players[playerSocketId];
         }
       });
-      
+      delete games[gameId];
+      console.log(`Game ${gameId} ended and cleaned up.`);
       return;
     }
     
     // Change turn to next player
-    const playerIds = Object.keys(game.players);
-    const currentIndex = playerIds.indexOf(game.currentTurn);
-    game.currentTurn = playerIds[(currentIndex + 1) % playerIds.length];
+    const persistentPlayerIds = Object.keys(game.players);
+    const currentIndex = persistentPlayerIds.indexOf(game.currentTurn);
+    game.currentTurn = persistentPlayerIds[(currentIndex + 1) % persistentPlayerIds.length];
     
     // Update game phase
     game.gamePhase = 'selectCard';
@@ -442,34 +475,87 @@ io.on('connection', (socket) => {
   
   // Handle disconnections
   socket.on('disconnect', () => {
-    const playerId = socket.id;
-    const player = players[playerId];
+    const playerInfo = players[socket.id];
+    console.log(`Socket disconnected: ${socket.id}`);
     
-    console.log(`Player disconnected: ${playerId}`);
-    
-    if (player) {
-      const gameId = player.gameId;
+    if (playerInfo) {
+      const { gameId, persistentPlayerId } = playerInfo;
+      delete players[socket.id]; // Remove mapping for this socket
+
       const game = games[gameId];
-      
-      if (game) {
-        // Notify remaining player
-        Object.keys(game.players).forEach(id => {
-          if (id !== playerId) {
-            io.to(id).emit('playerDisconnected', {
-              playerId,
-              playerName: game.players[playerId].name
-            });
-          }
-        });
-        
-        // Clean up game
-        delete games[gameId];
-        Object.keys(players).forEach(id => {
-          if (players[id].gameId === gameId) {
-            delete players[id];
-          }
-        });
+      if (game && game.players[persistentPlayerId]) {
+        console.log(`Player ${persistentPlayerId} disconnected from game ${gameId}`);
+        const disconnectedPlayerName = game.players[persistentPlayerId].name;
+        game.players[persistentPlayerId].currentSocketId = null; // Mark as disconnected
+
+        // Notify other player(s)
+        const otherPlayer = Object.values(game.players).find(p => p.id !== persistentPlayerId);
+        if (otherPlayer && otherPlayer.currentSocketId) {
+          io.to(otherPlayer.currentSocketId).emit('playerDisconnected', {
+            playerId: persistentPlayerId,
+            playerName: disconnectedPlayerName
+          });
+        }
+
+        // Check if all players are disconnected
+        const activePlayers = Object.values(game.players).filter(p => p.currentSocketId !== null);
+        if (activePlayers.length === 0 && Object.keys(game.players).length > 0) { // Ensure game wasn't already cleaned up
+          console.log(`Game ${gameId} has no active players. Cleaning up.`);
+          delete games[gameId]; 
+          // Player entries in global `players` map are already handled or will be on their disconnect
+        }
       }
+    }
+  });
+
+  // Reconnect to a game
+  socket.on('reconnectGame', (data) => {
+    const { gameId, playerId, playerName } = data; // playerId is persistentPlayerId
+    const newSocketId = socket.id;
+
+    console.log(`Attempting reconnect for player ${playerId} to game ${gameId} with new socket ${newSocketId}`);
+    const game = games[gameId];
+
+    if (game && game.players[playerId]) {
+      const playerToReconnect = game.players[playerId];
+      
+      // Only allow reconnect if the slot is marked as disconnected or if it's the same persistentId trying to re-establish
+      // This also implicitly checks if playerToReconnect.id === playerId
+      if (playerToReconnect.currentSocketId === null || playerToReconnect.id === playerId) {
+        // If there was an old socket for this persistentPlayerId in the global players map, remove it
+        // This handles cases where a player might have an old entry in `players` if a disconnect event was missed
+        for (const sockId in players) {
+            if (players[sockId].persistentPlayerId === playerId && sockId !== newSocketId) {
+                delete players[sockId];
+                break;
+            }
+        }
+
+        playerToReconnect.currentSocketId = newSocketId;
+        playerToReconnect.name = playerName || playerToReconnect.name; // Update name if provided
+        
+        players[newSocketId] = { gameId, persistentPlayerId: playerId };
+        socket.join(gameId);
+
+        socket.emit('reconnected', { gameId, playerId, message: 'Reconnected successfully.' });
+        sendGameStateToPlayer(gameId, playerId, newSocketId); // Send current game state
+
+        // Notify other player
+        const otherPlayer = Object.values(game.players).find(p => p.id !== playerId);
+        if (otherPlayer && otherPlayer.currentSocketId) {
+          io.to(otherPlayer.currentSocketId).emit('playerReconnected', {
+            playerId,
+            playerName: playerToReconnect.name
+          });
+        }
+        console.log(`Player ${playerId} reconnected to game ${gameId} with new socket ${newSocketId}`);
+      } else {
+        socket.emit('error', { message: 'Failed to reconnect. Session may be active elsewhere or slot taken.' });
+        console.log(`Reconnect failed for ${playerId}: slot not null or ID mismatch. Current socket for slot: ${playerToReconnect.currentSocketId}`);
+      }
+    } else {
+      socket.emit('error', { message: 'Game or player not found for reconnection.' });
+      console.log(`Reconnect failed for ${playerId}: Game ${gameId} or player not found in game.players.`);
     }
   });
 });
@@ -485,13 +571,13 @@ function startGame(gameId) {
   game.deck = createDeck();
   
   // Deal cards to players
-  Object.keys(game.players).forEach(playerId => {
-    game.players[playerId].hand = dealHand(game.deck);
+  Object.values(game.players).forEach(player => { // Iterate over player objects
+    player.hand = dealHand(game.deck);
   });
   
-  // Randomly choose first player
-  const playerIds = Object.keys(game.players);
-  game.currentTurn = playerIds[Math.floor(Math.random() * playerIds.length)];
+  // Randomly choose first player (using persistentPlayerIds)
+  const persistentPlayerIds = Object.keys(game.players);
+  game.currentTurn = persistentPlayerIds[Math.floor(Math.random() * persistentPlayerIds.length)];
   
   // Set initial game phase
   game.gamePhase = 'selectCard';
@@ -505,17 +591,6 @@ function startGame(gameId) {
   sendGameStateToPlayers(gameId);
 }
 
-// Send game state to players
-function sendGameStateToPlayers(gameId) {
-  const game = games[gameId];
-  if (!game) return;
-  
-  Object.keys(game.players).forEach(playerId => {
-    const playerGameState = getGameStateForPlayer(gameId, playerId);
-    io.to(playerId).emit('gameState', playerGameState);
-  });
-}
-
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
@@ -523,9 +598,8 @@ server.listen(PORT, () => {
   console.log(`Local IP: ${getLocalIpAddress()}`);
 });
 
-// Helper function to get local IP address
+// Helper function to get local IP address (os is required at the top now)
 function getLocalIpAddress() {
-  const { networkInterfaces } = require('os');
   const nets = networkInterfaces();
   
   for (const name of Object.keys(nets)) {

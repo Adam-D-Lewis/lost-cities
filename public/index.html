@@ -333,10 +333,11 @@
   <script>
     // Game state
     let gameState = {
-      playerId: null,
+      gameId: null, // Added to store gameId locally
+      playerId: null, // This will store the persistentPlayerId
       playerName: '',
       opponentName: '',
-      currentTurn: null,
+      currentTurn: null, // This will be a persistentPlayerId
       selectedCard: null,
       selectedTarget: null,
       gamePhase: 'waiting', // waiting, selectCard, selectTarget, drawCard, gameOver
@@ -398,15 +399,7 @@
     const serverInfoEl = document.getElementById('server-info');
 
     // Get local IP address to help setup
-    async function getLocalIpAddress() {
-      try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        localIpEl.innerHTML = `Your public IP is: ${data.ip}<br>For a local network game, use your local IP address.`;
-      } catch (error) {
-        localIpEl.innerHTML = 'Unable to get IP address. Use your local network IP address to connect.';
-      }
-    }
+    // This function remains the same, but its call is moved to after DOM content loaded.
 
     // Show notification
     function showNotification(message) {
@@ -874,23 +867,55 @@
       socket.on('connect', () => {
         console.log('Connected to server');
         serverInfoEl.textContent = `Connected to server: ${serverAddressInput.value}`;
+        
+        // Attempt to reconnect if we have stored gameId and playerId
+        const storedGameId = localStorage.getItem('lostCitiesGameId');
+        const storedPlayerId = localStorage.getItem('lostCitiesPlayerId');
+        const storedPlayerName = localStorage.getItem('lostCitiesPlayerName');
+
+        if (storedGameId && storedPlayerId && gameState.gameId === storedGameId) { // Check if current gameState.gameId matches to avoid re-emitting on normal connect
+          console.log(`Attempting to reconnect to game ${storedGameId} as player ${storedPlayerId}`);
+          socket.emit('reconnectGame', { 
+            gameId: storedGameId, 
+            playerId: storedPlayerId, 
+            playerName: storedPlayerName || gameState.playerName // Send current or stored name
+          });
+        }
       });
       
       socket.on('gameState', (state) => {
         // Update game state
-        gameState = {...gameState, ...state};
+        // Ensure playerId from localStorage is preferred if this is an initial load/reconnect
+        const localPId = localStorage.getItem('lostCitiesPlayerId');
+        gameState = {...gameState, ...state };
+        if (localPId && (!gameState.playerId || gameState.playerId !== localPId)) {
+            // This case might occur if server sends state before reconnected event fully sets client's view
+            // Or if server state's playerId is somehow different. Prioritize our known persistent ID.
+            // However, the server should be authoritative on game state.
+            // The key is that gameState.playerId on client should be the persistentId.
+        }
         renderGameState();
+      });
+
+      socket.on('reconnected', (data) => {
+        showNotification(data.message || 'Reconnected to the game!');
+        gameState.gameId = data.gameId;
+        gameState.playerId = data.playerId; // Ensure our local persistent ID is set
+        initializeGame(); // Make sure game UI is visible
+        // Full gameState will arrive via 'gameState' event
       });
       
       socket.on('playerJoined', (data) => {
+        // data.playerId is persistentPlayerId
         if (data.playerId !== gameState.playerId) {
           gameState.opponentName = data.playerName;
           addToHistory(`${data.playerName} joined the game`);
         }
-        renderGameState();
+        renderGameState(); // Opponent name might have changed
       });
       
       socket.on('gameStarted', (data) => {
+        // data.currentTurn is persistentPlayerId
         gameState.currentTurn = data.currentTurn;
         gameState.gamePhase = 'selectCard';
         addToHistory('Game started!');
@@ -898,6 +923,7 @@
       });
       
       socket.on('turnChanged', (data) => {
+        // data.currentTurn is persistentPlayerId
         gameState.currentTurn = data.currentTurn;
         gameState.gamePhase = data.gamePhase;
         
@@ -906,40 +932,63 @@
         } else {
           addToHistory(`${gameState.opponentName}'s turn`);
         }
-        
         renderGameState();
       });
       
       socket.on('cardPlayed', (data) => {
-        const playerName = data.playerId === gameState.playerId ? 'You' : gameState.opponentName;
-        addToHistory(`${playerName} played a ${data.card.value === 0 ? 'wager' : data.card.value} ${data.card.color} card`);
+        // data.playerId is persistentPlayerId
+        const playerNameDisplay = data.playerId === gameState.playerId ? 'You' : (gameState.opponentName || 'Opponent');
+        addToHistory(`${playerNameDisplay} played a ${data.card.value === 0 ? 'wager' : data.card.value} ${data.card.color} card`);
       });
       
       socket.on('cardDiscarded', (data) => {
-        const playerName = data.playerId === gameState.playerId ? 'You' : gameState.opponentName;
-        addToHistory(`${playerName} discarded a ${data.card.value === 0 ? 'wager' : data.card.value} ${data.card.color} card`);
+        // data.playerId is persistentPlayerId
+        const playerNameDisplay = data.playerId === gameState.playerId ? 'You' : (gameState.opponentName || 'Opponent');
+        addToHistory(`${playerNameDisplay} discarded a ${data.card.value === 0 ? 'wager' : data.card.value} ${data.card.color} card`);
       });
       
       socket.on('cardDrawn', (data) => {
-        const playerName = data.playerId === gameState.playerId ? 'You' : gameState.opponentName;
+        // data.playerId is persistentPlayerId
+        const playerNameDisplay = data.playerId === gameState.playerId ? 'You' : (gameState.opponentName || 'Opponent');
         const source = data.source === 'deck' ? 'the deck' : `the ${data.color} discard pile`;
-        addToHistory(`${playerName} drew a card from ${source}`);
+        addToHistory(`${playerNameDisplay} drew a card from ${source}`);
+      });
+
+      socket.on('playerDisconnected', (data) => {
+        // data.playerId is persistentPlayerId
+        if (data.playerId !== gameState.playerId) {
+            addToHistory(`${data.playerName || 'Opponent'} disconnected.`);
+            // Optionally, clear opponent's expeditions or show a disconnected status
+        }
+        // Game continues, server handles actual disconnect logic
+      });
+
+      socket.on('playerReconnected', (data) => {
+        // data.playerId is persistentPlayerId
+         if (data.playerId !== gameState.playerId) {
+            addToHistory(`${data.playerName || 'Opponent'} reconnected.`);
+            gameState.opponentName = data.playerName; // Update name if it changed
+        }
+        renderGameState(); // Re-render to update names etc.
       });
       
       socket.on('gameOver', (data) => {
+        // data.scores keys are persistentPlayerIds
         gameState.gamePhase = 'gameOver';
-        gameState.playerScore = data.scores[gameState.playerId];
+        if (data.scores && gameState.playerId) {
+            gameState.playerScore = data.scores[gameState.playerId] || 0;
+        }
         
-        const opponentId = Object.keys(data.scores).find(id => id !== gameState.playerId);
-        if (opponentId) {
-          gameState.opponentScore = data.scores[opponentId];
+        const opponentPersistentId = Object.keys(data.scores || {}).find(id => id !== gameState.playerId);
+        if (opponentPersistentId && data.scores) {
+          gameState.opponentScore = data.scores[opponentPersistentId] || 0;
         }
         
         let message = 'Game over! ';
         if (gameState.playerScore > gameState.opponentScore) {
           message += 'You win!';
         } else if (gameState.playerScore < gameState.opponentScore) {
-          message += `${gameState.opponentName} wins!`;
+          message += `${gameState.opponentName || 'Opponent'} wins!`;
         } else {
           message += "It's a tie!";
         }
@@ -947,67 +996,125 @@
         addToHistory(message);
         showNotification(message);
         renderGameState();
+
+        // Clear stored game data as game is over
+        localStorage.removeItem('lostCitiesGameId');
+        localStorage.removeItem('lostCitiesPlayerId');
+        localStorage.removeItem('lostCitiesPlayerName');
+        gameState.gameId = null; 
+        // gameState.playerId = null; // Keep playerId for score display until new game
       });
       
       socket.on('error', (error) => {
         showNotification(`Error: ${error.message}`);
+        if (error.message.includes("reconnect")) {
+            // If reconnect failed, clear stored data and show setup screen
+            localStorage.removeItem('lostCitiesGameId');
+            localStorage.removeItem('lostCitiesPlayerId');
+            localStorage.removeItem('lostCitiesPlayerName');
+            gameState.gameId = null;
+            gameState.playerId = null;
+            setupScreen.style.display = 'block';
+            gameContainer.style.display = 'none';
+            gameStatus.textContent = 'Failed to reconnect. Please start or join a new game.';
+        }
       });
       
       socket.on('disconnect', () => {
         console.log('Disconnected from server');
-        showNotification('Disconnected from server');
-        serverInfoEl.textContent = 'Disconnected from server';
+        // Don't immediately clear localStorage here, as 'connect' event will try to reconnect.
+        // Only if reconnection definitively fails (e.g. server error on reconnectGame) should we clear.
+        showNotification('Disconnected. Attempting to reconnect...');
+        serverInfoEl.textContent = 'Disconnected. Attempting to reconnect...';
       });
+    }
+
+    function connectToServer(serverAddress, isCreatingGame, isJoiningGame) {
+      try {
+        if (socket && socket.connected) {
+            socket.disconnect(); // Disconnect existing socket if any before creating new
+        }
+        socket = io(serverAddress, {
+            reconnectionAttempts: 5, // Optional: configure reconnection behavior
+            reconnectionDelay: 1000,
+        });
+        gameState.playerName = playerNameInput.value.trim() || localStorage.getItem('lostCitiesPlayerName') || (isCreatingGame ? 'Player 1' : 'Player 2');
+        localStorage.setItem('lostCitiesPlayerName', gameState.playerName); // Store/update name
+
+        setupSocketEvents(); // Setup handlers for the new socket instance
+        
+        if (isCreatingGame) {
+          socket.emit('createGame', { playerName: gameState.playerName });
+        } else if (isJoiningGame) {
+          socket.emit('joinGame', { playerName: gameState.playerName });
+        }
+        // If neither, it's a reconnect attempt handled by socket.on('connect')
+      } catch (error) {
+        alert(`Error connecting to server: ${error.message}`);
+      }
     }
 
     // Create game button click handler
     createGameBtn.addEventListener('click', () => {
-      const playerName = playerNameInput.value.trim() || 'Player 1';
+      localStorage.removeItem('lostCitiesGameId'); // Clear old session
+      localStorage.removeItem('lostCitiesPlayerId');
+      // Player name is preserved via input field or new localStorage set in connectToServer
+
       const serverAddress = serverAddressInput.value.trim() || 'http://localhost:3000';
-      
-      try {
-        socket = io(serverAddress);
-        gameState.playerName = playerName;
+      connectToServer(serverAddress, true, false);
         
-        setupSocketEvents();
-        
-        socket.emit('createGame', { playerName });
-        
+      // Moved gameCreated listener to setupSocketEvents to avoid duplicate listeners
+      // It will now be handled there, and will set localStorage.
+      // The 'gameCreated' event will set gameState.playerId and gameState.gameId
+      // then store them.
+    });
+
+
+    // Join game button click handler
+    joinGameBtn.addEventListener('click', () => {
+      localStorage.removeItem('lostCitiesGameId'); // Clear old session
+      localStorage.removeItem('lostCitiesPlayerId');
+
+      const serverAddress = serverAddressInput.value.trim() || 'http://localhost:3000';
+      connectToServer(serverAddress, false, true);
+
+      // Moved gameJoined listener to setupSocketEvents
+      // The 'gameJoined' event will set gameState.playerId and gameState.gameId
+      // then store them.
+    });
+
+    // Add listeners for gameCreated and gameJoined inside setupSocketEvents
+    // to store gameId and playerId in localStorage
+    const originalSetupSocketEvents = setupSocketEvents;
+    setupSocketEvents = () => {
+      originalSetupSocketEvents(); // Call original events
+
+      if (socket) { // Ensure socket exists before adding new listeners
         socket.on('gameCreated', (data) => {
-          gameState.playerId = data.playerId;
+          gameState.playerId = data.playerId; // persistentPlayerId
+          gameState.gameId = data.gameId;
+          localStorage.setItem('lostCitiesGameId', data.gameId);
+          localStorage.setItem('lostCitiesPlayerId', data.playerId);
+          localStorage.setItem('lostCitiesPlayerName', gameState.playerName); // Ensure name is stored
           initializeGame();
           addToHistory('Game created. Waiting for opponent...');
           showNotification('Game created! Waiting for opponent to join...');
         });
-      } catch (error) {
-        alert(`Error connecting to server: ${error.message}`);
-      }
-    });
 
-    // Join game button click handler
-    joinGameBtn.addEventListener('click', () => {
-      const playerName = playerNameInput.value.trim() || 'Player 2';
-      const serverAddress = serverAddressInput.value.trim() || 'http://localhost:3000';
-      
-      try {
-        socket = io(serverAddress);
-        gameState.playerName = playerName;
-        
-        setupSocketEvents();
-        
-        socket.emit('joinGame', { playerName });
-        
         socket.on('gameJoined', (data) => {
-          gameState.playerId = data.playerId;
+          gameState.playerId = data.playerId; // persistentPlayerId
+          gameState.gameId = data.gameId;
           gameState.opponentName = data.hostName;
+          localStorage.setItem('lostCitiesGameId', data.gameId);
+          localStorage.setItem('lostCitiesPlayerId', data.playerId);
+          localStorage.setItem('lostCitiesPlayerName', gameState.playerName); // Ensure name is stored
           initializeGame();
           addToHistory(`Joined game hosted by ${data.hostName}`);
           showNotification(`Joined game! Playing against ${data.hostName}`);
         });
-      } catch (error) {
-        alert(`Error connecting to server: ${error.message}`);
       }
-    });
+    };
+
 
     // Play card button click handler
     playCardBtn.addEventListener('click', playCard);
@@ -1021,8 +1128,38 @@
     // Draw discard button click handler
     drawDiscardBtn.addEventListener('click', drawFromDiscard);
 
-    // Call getLocalIpAddress on page load
-    getLocalIpAddress();
+    // Initial page load logic
+    document.addEventListener('DOMContentLoaded', () => {
+      getLocalIpAddress(); // For user guidance
+
+      const storedGameId = localStorage.getItem('lostCitiesGameId');
+      const storedPlayerId = localStorage.getItem('lostCitiesPlayerId');
+      const storedPlayerName = localStorage.getItem('lostCitiesPlayerName');
+      const serverAddress = localStorage.getItem('lostCitiesServerAddress') || 'http://localhost:3000'; // Persist server address too
+
+      playerNameInput.value = storedPlayerName || '';
+      serverAddressInput.value = serverAddress;
+
+
+      if (storedGameId && storedPlayerId) {
+        console.log(`Found stored game: ${storedGameId}, player: ${storedPlayerId}. Attempting to reconnect.`);
+        gameState.gameId = storedGameId; // Set gameId so 'connect' event knows to try reconnecting
+        gameState.playerId = storedPlayerId;
+        gameState.playerName = storedPlayerName || 'Player';
+        
+        initializeGame(); // Show game screen immediately
+        gameStatus.textContent = 'Attempting to reconnect...';
+        connectToServer(serverAddress, false, false); // false, false indicates it's a reconnect attempt
+      } else {
+        setupScreen.style.display = 'block';
+        gameContainer.style.display = 'none';
+      }
+
+      // Save server address when it changes
+      serverAddressInput.addEventListener('change', () => {
+        localStorage.setItem('lostCitiesServerAddress', serverAddressInput.value.trim());
+      });
+    });
   </script>
 </body>
 </html>
