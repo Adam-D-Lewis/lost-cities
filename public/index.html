@@ -147,13 +147,7 @@
       font-size: 14px; /* Reduced font size */
       margin-top: 5px;
     }
-    .color-indicator {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 5px;
-    }
+    /* .color-indicator styles removed */
     .expedition-label {
       display: flex;
       align-items: center;
@@ -190,7 +184,7 @@
       align-items: center;
       gap: 15px; /* Space between opponent exp, discard, player exp */
       padding: 10px;
-      background-color: rgba(0, 0, 0, 0.05); /* Subtle background for column */
+      /* background-color will be set dynamically by JS */
       border-radius: 8px;
       min-width: 80px; /* Ensure columns have some base width */
     }
@@ -428,6 +422,7 @@
       colors.forEach(color => {
         const columnEl = document.createElement('div');
         columnEl.className = 'color-column';
+        columnEl.style.backgroundColor = getPastelColorCode(color); // Set column background
 
         // 1. Opponent's Expedition Area
         const opponentExpeditionContainer = document.createElement('div');
@@ -435,10 +430,10 @@
         
         const opponentLabel = document.createElement('div');
         opponentLabel.className = 'expedition-label';
-        const opponentColorIndicator = document.createElement('span');
-        opponentColorIndicator.className = 'color-indicator';
-        opponentColorIndicator.style.backgroundColor = getColorCode(color);
-        opponentLabel.appendChild(opponentColorIndicator);
+        // const opponentColorIndicator = document.createElement('span'); // Removed
+        // opponentColorIndicator.className = 'color-indicator'; // Removed
+        // opponentColorIndicator.style.backgroundColor = getColorCode(color); // Removed
+        // opponentLabel.appendChild(opponentColorIndicator); // Removed
         opponentLabel.appendChild(document.createTextNode(`Opponent ${capitalizeFirstLetter(color)}`)); 
         
         const opponentCardsEl = document.createElement('div');
@@ -455,11 +450,11 @@
 
         const discardLabel = document.createElement('div');
         discardLabel.className = 'expedition-label';
-        // For discard, use the color indicator as well for consistency
-        const discardColorIndicator = document.createElement('span');
-        discardColorIndicator.className = 'color-indicator';
-        discardColorIndicator.style.backgroundColor = getColorCode(color);
-        discardLabel.appendChild(discardColorIndicator);
+        // For discard, use the color indicator as well for consistency // Removed
+        // const discardColorIndicator = document.createElement('span'); // Removed
+        // discardColorIndicator.className = 'color-indicator'; // Removed
+        // discardColorIndicator.style.backgroundColor = getColorCode(color); // Removed
+        // discardLabel.appendChild(discardColorIndicator); // Removed
         discardLabel.appendChild(document.createTextNode(`Discard`));
         
         const discardCardEl = document.createElement('div');
@@ -480,10 +475,10 @@
         
         const playerLabel = document.createElement('div');
         playerLabel.className = 'expedition-label';
-        const playerColorIndicator = document.createElement('span');
-        playerColorIndicator.className = 'color-indicator';
-        playerColorIndicator.style.backgroundColor = getColorCode(color);
-        playerLabel.appendChild(playerColorIndicator);
+        // const playerColorIndicator = document.createElement('span'); // Removed
+        // playerColorIndicator.className = 'color-indicator'; // Removed
+        // playerColorIndicator.style.backgroundColor = getColorCode(color); // Removed
+        // playerLabel.appendChild(playerColorIndicator); // Removed
         playerLabel.appendChild(document.createTextNode(`Your ${capitalizeFirstLetter(color)}`));
 
         const playerCardsEl = document.createElement('div');
@@ -866,6 +861,17 @@
         yellow: '#f1c40f'
       };
       return colorCodes[color] || '#000000';
+    }
+
+    function getPastelColorCode(color) {
+      const pastelColorCodes = {
+        red: '#ffcccb',     // Light Red
+        green: '#90ee90',   // Light Green
+        blue: '#add8e6',    // Light Blue
+        white: '#f5f5f5',   // Off-White (very light gray)
+        yellow: '#ffffcc'   // Light Yellow
+      };
+      return pastelColorCodes[color] || '#e0e0e0'; // Default to a light gray
     }
 
     // Socket event handlers
