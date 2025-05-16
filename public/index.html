@@ -100,8 +100,9 @@
     .expedition-cards {
       display: flex;
       flex-direction: column;
+      justify-content: flex-start; /* Ensure cards stack from the top */
+      height: 350px; /* Max height: 1st card (75px) + 11 more cards (11 * 25px = 275px) = 350px */
       /* gap: 2px; /* Removed gap for overlapping */
-      /* min-height: 80px; /* Removed min-height, will be dynamic */
     }
     /* .discard-piles (container) styles removed */
     .controls {
