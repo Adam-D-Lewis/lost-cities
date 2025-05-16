@@ -56,24 +56,17 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 4px rgba(93, 156, 236, 0.2); /* Glow effect */
       transform: translateY(-3px);
     }
-    .color-scores {
-      margin-top: 10px;
-      font-size: 0.9em;
-    }
-    .color-score-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 2px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .color-score-item:last-child {
-      border-bottom: none;
-    }
-    .color-score-item .color-name {
-      font-weight: 600;
-    }
-    .color-score-item .score-value {
-      /* Style for the score value if needed */
+    /* Removed .color-scores and .color-score-item styles */
+    .column-color-score {
+      font-size: 1em; /* Slightly larger for better visibility */
+      font-weight: 700; /* Bold */
+      margin: 8px 0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, 0.1); /* Subtle background to pop slightly */
+      text-align: center;
+      min-width: 50px; /* Ensure it has some width */
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     .board {
       display: flex; /* To arrange columns and deck area side-by-side */
@@ -364,16 +357,12 @@
       <div id="player-score" class="score-card">
         <h3 id="player-name">You: 0</h3>
         <p>Total Score: <span id="player-score-value">0</span></p>
-        <div class="color-scores" id="player-color-scores">
-          <!-- Player color scores will be populated here -->
-        </div>
+        <!-- Removed player-color-scores div -->
       </div>
       <div id="opponent-score" class="score-card">
         <h3 id="opponent-name">Opponent: 0</h3>
         <p>Total Score: <span id="opponent-score-value">0</span></p>
-        <div class="color-scores" id="opponent-color-scores">
-          <!-- Opponent color scores will be populated here -->
-        </div>
+        <!-- Removed opponent-color-scores div -->
       </div>
     </div>
 
@@ -545,6 +534,13 @@
         opponentExpeditionContainer.appendChild(opponentCardsEl);
         columnEl.appendChild(opponentExpeditionContainer);
 
+        // Opponent's score for this color (Above Discard)
+        const opponentColorScoreEl = document.createElement('div');
+        opponentColorScoreEl.id = `opponent-${color}-score-display`;
+        opponentColorScoreEl.className = 'column-color-score';
+        opponentColorScoreEl.textContent = '0'; // Default text
+        columnEl.appendChild(opponentColorScoreEl);
+
         // 2. Discard Pile Area
         const discardPileContainer = document.createElement('div');
         discardPileContainer.className = 'expedition'; 
@@ -569,6 +565,13 @@
         discardPileContainer.appendChild(discardLabel);
         discardPileContainer.appendChild(discardCardEl);
         columnEl.appendChild(discardPileContainer);
+
+        // Player's score for this color (Below Discard)
+        const playerColorScoreEl = document.createElement('div');
+        playerColorScoreEl.id = `player-${color}-score-display`;
+        playerColorScoreEl.className = 'column-color-score';
+        playerColorScoreEl.textContent = '0'; // Default text
+        columnEl.appendChild(playerColorScoreEl);
 
         // 3. Player's Expedition Area
         const playerExpeditionContainer = document.createElement('div');
@@ -806,31 +809,19 @@
 
       const colors = ['red', 'green', 'blue', 'white', 'yellow'];
 
-      // Player color scores
-      const playerColorScoresEl = document.getElementById('player-color-scores');
-      playerColorScoresEl.innerHTML = ''; // Clear old scores
-      if (gameState.playerScoreDetails) {
-        colors.forEach(color => {
-          const scoreItem = document.createElement('div');
-          scoreItem.className = 'color-score-item';
-          const colorDisplayName = capitalizeFirstLetter(color);
-          scoreItem.innerHTML = `<span class="color-name" style="color:${getColorCode(color)};">${colorDisplayName}:</span> <span class="score-value">${gameState.playerScoreDetails[color] || 0}</span>`;
-          playerColorScoresEl.appendChild(scoreItem);
-        });
-      }
+      colors.forEach(color => {
+        // Update player's color score in the column
+        const playerColorScoreDisplayEl = document.getElementById(`player-${color}-score-display`);
+        if (playerColorScoreDisplayEl && gameState.playerScoreDetails) {
+          playerColorScoreDisplayEl.textContent = `${gameState.playerScoreDetails[color] || 0}`;
+        }
 
-      // Opponent color scores
-      const opponentColorScoresEl = document.getElementById('opponent-color-scores');
-      opponentColorScoresEl.innerHTML = ''; // Clear old scores
-      if (gameState.opponentScoreDetails) {
-        colors.forEach(color => {
-          const scoreItem = document.createElement('div');
-          scoreItem.className = 'color-score-item';
-          const colorDisplayName = capitalizeFirstLetter(color);
-          scoreItem.innerHTML = `<span class="color-name" style="color:${getColorCode(color)};">${colorDisplayName}:</span> <span class="score-value">${gameState.opponentScoreDetails[color] || 0}</span>`;
-          opponentColorScoresEl.appendChild(scoreItem);
-        });
-      }
+        // Update opponent's color score in the column
+        const opponentColorScoreDisplayEl = document.getElementById(`opponent-${color}-score-display`);
+        if (opponentColorScoreDisplayEl && gameState.opponentScoreDetails) {
+          opponentColorScoreDisplayEl.textContent = `${gameState.opponentScoreDetails[color] || 0}`;
+        }
+      });
     }
 
     function updateGameStatus() {
