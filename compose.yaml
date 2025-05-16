@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  lost-cities-server:
+    build: .
+    ports:
+      - "3000:3000"
+    container_name: lost_cities_server
+    # If you want to ensure the server restarts automatically if it crashes:
+    # restart: unless-stopped
