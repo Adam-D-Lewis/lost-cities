@@ -673,16 +673,11 @@
         
         if (gameState.gamePhase === 'selectCard') {
           if (gameState.selectedCard !== null) {
-            if (gameState.selectedTarget !== null) {
-              if (gameState.selectedTarget.startsWith('expedition')) {
-                gameStatus.textContent = 'Card and expedition selected. Click "Play Card".';
-              } else if (gameState.selectedTarget.startsWith('discard')) {
-                gameStatus.textContent = 'Card and discard pile selected. Click "Discard Card".';
-              } else { // Should not happen if target is always expedition- or discard-
-                gameStatus.textContent = 'Card and target selected. Review your action.';
-              }
+            if (gameState.selectedTarget && gameState.selectedTarget.startsWith('discard')) {
+              gameStatus.textContent = 'Card and discard pile selected. Click "Discard Card".';
             } else {
-              gameStatus.textContent = 'Card selected. Click an expedition to play on, or a discard pile to discard to.';
+              // If an expedition is selected, it's just for visual feedback or drawing, not for playing.
+              gameStatus.textContent = 'Card selected. Click "Play Card" (plays to its color) or "Discard Card".';
             }
           } else {
             gameStatus.textContent = 'Your turn: Select a card to play or discard';
@@ -703,7 +698,7 @@
       const isSelectCardPhase = gameState.gamePhase === 'selectCard';
       const isDrawCardPhase = gameState.gamePhase === 'drawCard';
       
-      playCardBtn.disabled = !(isPlayerTurn && cardSelected && targetSelected && targetSelected.startsWith('expedition') && isSelectCardPhase);
+      playCardBtn.disabled = !(isPlayerTurn && cardSelected && isSelectCardPhase);
       discardCardBtn.disabled = !(isPlayerTurn && cardSelected && (!targetSelected || targetSelected.startsWith('discard')) && isSelectCardPhase);
       drawDeckBtn.disabled = !(isPlayerTurn && isDrawCardPhase);
       drawDiscardBtn.disabled = !(isPlayerTurn && targetSelected && targetSelected.startsWith('discard') && isDrawCardPhase);
@@ -763,16 +758,14 @@
     function playCard() {
       if (gameState.currentTurn !== gameState.playerId || 
           gameState.gamePhase !== 'selectCard' ||
-          gameState.selectedCard === null ||
-          !gameState.selectedTarget ||
-          !gameState.selectedTarget.startsWith('expedition')) {
+          gameState.selectedCard === null) {
         return;
       }
       
       const card = gameState.hand[gameState.selectedCard];
-      const targetColor = gameState.selectedTarget.split('-')[1];
+      const targetColor = card.color; // Play to the card's own color expedition
       
-      // Check if card can be played on this expedition
+      // Check if card can be played on this expedition (this check might seem redundant now, but good for safety)
       if (card.color !== targetColor) {
         showNotification(`Can only play ${card.color} cards on the ${card.color} expedition`);
         return;
