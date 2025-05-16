@@ -502,79 +502,39 @@ io.on('connection', (socket) => {
       delete players[socket.id]; // Remove mapping for this socket
 
       const game = games[gameId];
-      if (game && game.players[persistentPlayerId]) {
-        console.log(`Player ${persistentPlayerId} disconnected from game ${gameId}`);
-        const disconnectedPlayerName = game.players[persistentPlayerId].name;
-        game.players[persistentPlayerId].currentSocketId = null; // Mark as disconnected
+      if (game) {
+        const disconnectedPlayerDetails = game.players[persistentPlayerId];
+        const disconnectedPlayerName = disconnectedPlayerDetails ? disconnectedPlayerDetails.name : 'A player';
 
-        // Notify other player(s)
-        const otherPlayer = Object.values(game.players).find(p => p.id !== persistentPlayerId);
-        if (otherPlayer && otherPlayer.currentSocketId) {
-          io.to(otherPlayer.currentSocketId).emit('playerDisconnected', {
-            playerId: persistentPlayerId,
-            playerName: disconnectedPlayerName
-          });
+        console.log(`Player ${persistentPlayerId} (${disconnectedPlayerName}) disconnected from game ${gameId}.`);
+
+        // Remove the disconnected player from the game
+        if (disconnectedPlayerDetails) {
+          delete game.players[persistentPlayerId];
         }
 
-        // Check if all players are disconnected
-        const activePlayers = Object.values(game.players).filter(p => p.currentSocketId !== null);
-        if (activePlayers.length === 0 && Object.keys(game.players).length > 0) { // Ensure game wasn't already cleaned up
-          console.log(`Game ${gameId} has no active players. Cleaning up.`);
-          delete games[gameId]; 
-          // Player entries in global `players` map are already handled or will be on their disconnect
+        // Notify the other player, if any, that their opponent has left and the game is over.
+        const remainingPlayers = Object.values(game.players);
+        if (remainingPlayers.length > 0) {
+          const otherPlayer = remainingPlayers[0]; // Assuming a 2-player game, only one would be left.
+          if (otherPlayer.currentSocketId) {
+            io.to(otherPlayer.currentSocketId).emit('opponentDisconnected', {
+              message: `${disconnectedPlayerName} has disconnected. The game is over.`,
+              playerName: disconnectedPlayerName
+            });
+          }
         }
-      }
-    }
-  });
-
-  // Reconnect to a game
-  socket.on('reconnectGame', (data) => {
-    const { gameId, playerId, playerName } = data; // playerId is persistentPlayerId
-    const newSocketId = socket.id;
-
-    console.log(`Attempting reconnect for player ${playerId} to game ${gameId} with new socket ${newSocketId}`);
-    const game = games[gameId];
-
-    if (game && game.players[playerId]) {
-      const playerToReconnect = game.players[playerId];
-      
-      // Only allow reconnect if the slot is marked as disconnected or if it's the same persistentId trying to re-establish
-      // This also implicitly checks if playerToReconnect.id === playerId
-      if (playerToReconnect.currentSocketId === null || playerToReconnect.id === playerId) {
-        // If there was an old socket for this persistentPlayerId in the global players map, remove it
-        // This handles cases where a player might have an old entry in `players` if a disconnect event was missed
-        for (const sockId in players) {
-            if (players[sockId].persistentPlayerId === playerId && sockId !== newSocketId) {
-                delete players[sockId];
-                break;
-            }
-        }
-
-        playerToReconnect.currentSocketId = newSocketId;
-        playerToReconnect.name = playerName || playerToReconnect.name; // Update name if provided
         
-        players[newSocketId] = { gameId, persistentPlayerId: playerId };
-        socket.join(gameId);
-
-        socket.emit('reconnected', { gameId, playerId, message: 'Reconnected successfully.' });
-        sendGameStateToPlayer(gameId, playerId, newSocketId); // Send current game state
-
-        // Notify other player
-        const otherPlayer = Object.values(game.players).find(p => p.id !== playerId);
-        if (otherPlayer && otherPlayer.currentSocketId) {
-          io.to(otherPlayer.currentSocketId).emit('playerReconnected', {
-            playerId,
-            playerName: playerToReconnect.name
-          });
-        }
-        console.log(`Player ${playerId} reconnected to game ${gameId} with new socket ${newSocketId}`);
-      } else {
-        socket.emit('error', { message: 'Failed to reconnect. Session may be active elsewhere or slot taken.' });
-        console.log(`Reconnect failed for ${playerId}: slot not null or ID mismatch. Current socket for slot: ${playerToReconnect.currentSocketId}`);
+        // Clean up the game since it can't continue without the disconnected player
+        console.log(`Game ${gameId} ended due to disconnection. Cleaning up.`);
+        // Remove any other players associated with this game from the global players map
+        Object.values(game.players).forEach(p => {
+          if (p.currentSocketId && players[p.currentSocketId]) {
+            delete players[p.currentSocketId];
+          }
+        });
+        delete games[gameId];
       }
-    } else {
-      socket.emit('error', { message: 'Game or player not found for reconnection.' });
-      console.log(`Reconnect failed for ${playerId}: Game ${gameId} or player not found in game.players.`);
     }
   });
 });
