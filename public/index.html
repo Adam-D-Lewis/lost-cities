@@ -672,9 +672,21 @@
         playerScoreCard.classList.add('active');
         
         if (gameState.gamePhase === 'selectCard') {
-          gameStatus.textContent = 'Your turn: Select a card to play or discard';
-        } else if (gameState.gamePhase === 'selectTarget') {
-          gameStatus.textContent = 'Select where to play the card';
+          if (gameState.selectedCard !== null) {
+            if (gameState.selectedTarget !== null) {
+              if (gameState.selectedTarget.startsWith('expedition')) {
+                gameStatus.textContent = 'Card and expedition selected. Click "Play Card".';
+              } else if (gameState.selectedTarget.startsWith('discard')) {
+                gameStatus.textContent = 'Card and discard pile selected. Click "Discard Card".';
+              } else { // Should not happen if target is always expedition- or discard-
+                gameStatus.textContent = 'Card and target selected. Review your action.';
+              }
+            } else {
+              gameStatus.textContent = 'Card selected. Click an expedition to play on, or a discard pile to discard to.';
+            }
+          } else {
+            gameStatus.textContent = 'Your turn: Select a card to play or discard';
+          }
         } else if (gameState.gamePhase === 'drawCard') {
           gameStatus.textContent = 'Draw a card from the deck or a discard pile';
         }
@@ -709,8 +721,7 @@
         gameState.selectedCard = index;
       }
       
-      renderHand();
-      updateControls();
+      renderGameState();
     }
 
     function selectExpeditionTarget(color) {
@@ -725,8 +736,7 @@
         gameState.selectedTarget = `expedition-${color}`;
       }
       
-      renderExpeditions();
-      updateControls();
+      renderGameState();
     }
 
     function selectDiscardTarget(color) {
@@ -747,8 +757,7 @@
         gameState.selectedTarget = `discard-${color}`;
       }
       
-      renderDiscardPiles();
-      updateControls();
+      renderGameState();
     }
 
     function playCard() {
