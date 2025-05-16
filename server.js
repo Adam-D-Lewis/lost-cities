@@ -591,12 +591,14 @@ function startGame(gameId) {
   sendGameStateToPlayers(gameId);
 }
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Local IP: ${getLocalIpAddress()}`);
-});
+// Start the server only if this script is run directly
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Local IP: ${getLocalIpAddress()}`);
+  });
+}
 
 // Helper function to get local IP address (os is required at the top now)
 function getLocalIpAddress() {
