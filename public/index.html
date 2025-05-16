@@ -55,8 +55,8 @@
       background-color: #27ae60;
       padding: 10px; /* Reduced padding */
       border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
+      position: relative; /* For absolute positioning of the deck */
+      /* .discard-piles will now be a block element taking full width */
     }
     .expedition-area {
       display: flex;
@@ -119,6 +119,11 @@
       display: flex;
       gap: 5px; /* Reduced gap */
       justify-content: center;
+      flex-wrap: wrap; /* To match expedition-area behavior */
+      padding: 5px;   /* To match expedition-area behavior */
+      /* This div will now take the full width of .play-area's content box,
+         allowing its flex items (the individual color discard piles) to center
+         in a space consistent with the expedition areas. */
     }
     .controls {
       display: flex;
@@ -177,7 +182,10 @@
       font-weight: bold;
     }
     .deck {
-      position: relative;
+      position: absolute;
+      right: 10px; /* Aligns with the right padding edge of .play-area */
+      top: 50%;
+      transform: translateY(-50%); /* Vertically centers the deck in .play-area */
       width: 60px; /* Reduced width */
       height: 85px; /* Reduced height */
       text-align: center;
