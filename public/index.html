@@ -925,13 +925,14 @@
       
       socket.on('turnChanged', (data) => {
         // data.currentTurn is persistentPlayerId
-        gameState.currentTurn = data.currentTurn;
-        const previousTurn = gameState.currentTurn;
+        const previousTurn = gameState.currentTurn; // Capture current turn *before* updating it
         gameState.currentTurn = data.currentTurn;
         gameState.gamePhase = data.gamePhase;
         
         if (gameState.currentTurn === gameState.playerId) {
-          if (previousTurn !== gameState.playerId) { // Play sound only if it just became our turn
+          // Play sound only if the turn has *changed* to this player,
+          // and it wasn't null before (i.e., not the very first turn of the game setup)
+          if (previousTurn !== gameState.playerId && previousTurn !== null) { 
             playTurnSound();
           }
           addToHistory('Your turn');
