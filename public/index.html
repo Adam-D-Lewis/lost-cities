@@ -80,7 +80,8 @@
       border-radius: 5px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start; /* Align content to the top */
+      padding-top: 3px; /* Add some space at the top of the card */
       align-items: center;
       font-weight: bold;
       font-size: 1em; /* Reduced font size */
@@ -110,8 +111,8 @@
     .expedition-cards {
       display: flex;
       flex-direction: column;
-      gap: 2px; /* Reduced gap */
-      min-height: 80px; /* Reduced min-height */
+      /* gap: 2px; /* Removed gap for overlapping */
+      /* min-height: 80px; /* Removed min-height, will be dynamic */
     }
     .discard-piles {
       display: flex;
@@ -590,6 +591,10 @@
           valueEl.textContent = card.value === 0 ? '★' : card.value;
           
           cardEl.appendChild(valueEl);
+          
+          if (playerExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
+            cardEl.style.marginTop = '-50px'; // 75px card height - 25px visible top = 50px overlap
+          }
           playerExpEl.appendChild(cardEl);
         });
         
@@ -604,6 +609,10 @@
           valueEl.textContent = card.value === 0 ? '★' : card.value;
           
           cardEl.appendChild(valueEl);
+
+          if (opponentExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
+            cardEl.style.marginTop = '-50px';
+          }
           opponentExpEl.appendChild(cardEl);
         });
         
