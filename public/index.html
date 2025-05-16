@@ -697,8 +697,8 @@
       // (no target is selected OR a discard pile is selected)
       let canDiscard = false;
       if (isPlayerTurn && cardSelected && isSelectCardPhase) {
-        // Ensure selectedTarget is a string before calling startsWith if targetIsSelected is true
-        if (!targetIsSelected || (targetIsSelected && typeof gameState.selectedTarget === 'string' && gameState.selectedTarge.startsWith('discard'))) {
+        // Ensure selectedTarget is a string before calling startsWith if targetSelected is true
+        if (!targetSelected || (targetSelected && typeof gameState.selectedTarget === 'string' && gameState.selectedTarget.startsWith('discard'))) {
           canDiscard = true;
         }
       }
@@ -708,7 +708,7 @@
       
       let canDrawFromDiscard = false;
       // Check player turn and phase first, then if a target is selected, then if it's a discard pile.
-      if (isPlayerTurn && isDrawCardPhase && targetIsSelected && typeof gameState.selectedTarget === 'string' && gameState.selectedTarget.startsWith('discard')) {
+      if (isPlayerTurn && isDrawCardPhase && targetSelected && typeof gameState.selectedTarget === 'string' && gameState.selectedTarget.startsWith('discard')) {
         canDrawFromDiscard = true;
       }
       // For debugging, you might uncomment this log:
@@ -1161,7 +1161,7 @@
 
     // Initial page load logic
     document.addEventListener('DOMContentLoaded', () => {
-      getLocalIpAddress(); // For user guidance
+      // getLocalIpAddress(); // This function is server-side, remove call from client
 
       const storedGameId = localStorage.getItem('lostCitiesGameId');
       const storedPlayerId = localStorage.getItem('lostCitiesPlayerId');
