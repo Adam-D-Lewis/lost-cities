@@ -221,11 +221,33 @@
       align-items: center;
       gap: 20px; /* Space between opponent exp, discard, player exp */
       padding: 15px;
-      /* background-color will be set dynamically by JS */
       border-radius: 12px; /* More rounded */
       min-width: 90px; /* Ensure columns have some base width */
-      transition: background-color 0.5s ease; /* Smooth bg color change */
+      transition: background 0.5s ease; /* Smooth bg change for gradients */
+      color: #333; /* Default text color for columns, ensure readability */
     }
+
+    /* Theme styles for columns */
+    .color-column.theme-red { /* Fire themed */
+      background: linear-gradient(135deg, #FF8C00, #FF4500); /* DarkOrange to OrangeRed */
+      color: white; /* Text color for dark backgrounds */
+    }
+    .color-column.theme-green { /* LOTR themed */
+      background: linear-gradient(135deg, #556B2F, #228B22); /* DarkOliveGreen to ForestGreen */
+      color: white; /* Text color for dark backgrounds */
+    }
+    .color-column.theme-blue { /* Atlantis themed */
+      background: linear-gradient(135deg, #1E90FF, #00008B); /* DodgerBlue to DarkBlue */
+      color: white; /* Text color for dark backgrounds */
+    }
+    .color-column.theme-white { /* Dwarf themed */
+      background: linear-gradient(135deg, #D3D3D3, #A9A9A9); /* LightGray to DarkGray */
+      /* Consider adding a subtle texture or pattern here if possible with CSS */
+    }
+    .color-column.theme-yellow { /* Egyptian themed */
+      background: linear-gradient(135deg, #F0E68C, #DAA520); /* Khaki to Goldenrod */
+    }
+
     .deck-area {
       display: flex;
       flex-direction: column;
@@ -459,8 +481,8 @@
 
       colors.forEach(color => {
         const columnEl = document.createElement('div');
-        columnEl.className = 'color-column';
-        columnEl.style.backgroundColor = getPastelColorCode(color); // Set column background
+        columnEl.className = 'color-column theme-' + color; // Apply theme class
+        // columnEl.style.backgroundColor = getPastelColorCode(color); // Removed: background now handled by CSS theme class
 
         // 1. Opponent's Expedition Area
         const opponentExpeditionContainer = document.createElement('div');
