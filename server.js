@@ -27,6 +27,24 @@ const games = {}; // Stores game states, keyed by gameId
 const players = {}; // Maps current socket.id to { gameId, persistentPlayerId }
 
 // Helper functions
+
+// Define order for card colors
+const colorOrder = ['red', 'green', 'blue', 'white', 'yellow'];
+
+// Sorts a player's hand by color, then by value (wagers first, then 2-10)
+function sortHand(hand) {
+  return [...hand].sort((a, b) => {
+    const colorComparison = colorOrder.indexOf(a.color) - colorOrder.indexOf(b.color);
+    if (colorComparison !== 0) {
+      return colorComparison;
+    }
+    // Wager cards (value 0) come before numbered cards
+    if (a.value === 0 && b.value !== 0) return -1;
+    if (a.value !== 0 && b.value === 0) return 1;
+    return a.value - b.value;
+  });
+}
+
 function createDeck() {
   const deck = [];
   const colors = ['red', 'green', 'blue', 'white', 'yellow'];
@@ -424,7 +442,8 @@ io.on('connection', (socket) => {
     
     // Add card to hand
     playerData.hand.push(drawnCard);
-    
+    playerData.hand = sortHand(playerData.hand); // Sort the hand after drawing
+
     // Notify all players
     io.to(gameId).emit('cardDrawn', {
       playerId: persistentPlayerId, // Send persistentPlayerId
@@ -573,6 +592,7 @@ function startGame(gameId) {
   // Deal cards to players
   Object.values(game.players).forEach(player => { // Iterate over player objects
     player.hand = dealHand(game.deck);
+    player.hand = sortHand(player.hand); // Sort the hand after dealing
   });
   
   // Randomly choose first player (using persistentPlayerIds)
