@@ -7,19 +7,22 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e9e9e9; /* Slightly richer background */
       margin: 0;
       padding: 0;
+      color: #333; /* Default text color */
     }
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 10px; /* Reduced padding */
+      padding: 15px; /* Increased padding for better spacing */
     }
     h1 {
       color: #2c3e50;
       text-align: center;
+      font-size: 2em; /* Slightly larger h1 */
+      margin-bottom: 15px;
     }
     .game-status {
       text-align: center;
@@ -62,34 +65,35 @@
       gap: 5px; /* Reduced gap */
     }
     .card {
-      width: 50px; /* Reduced width */
-      height: 75px; /* Reduced height */
-      background-color: white;
-      border-radius: 5px;
+      width: 55px; /* Increased width */
+      height: 80px; /* Increased height */
+      background-color: white; /* Default, will be overridden by color class */
+      border-radius: 6px; /* Slightly larger radius */
       display: flex;
       flex-direction: column;
-      justify-content: flex-start; /* Align content to the top */
-      padding-top: 3px; /* Add some space at the top of the card */
+      justify-content: center; /* Center value vertically */
       align-items: center;
       font-weight: bold;
-      font-size: 1em; /* Reduced font size */
+      font-size: 1.1em; /* Slightly larger font for card value */
       cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Reduced shadow */
-      border: 1px solid #333; /* Added border for better contrast */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Enhanced shadow */
+      border: 1px solid rgba(0,0,0,0.1); /* Softer border */
       position: relative;
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
+      color: #fff; /* Default text color for cards, good for dark backgrounds */
     }
     .card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-    .card.red { color: #e74c3c; }
-    .card.green { color: #2ecc71; }
-    .card.blue { color: #3498db; }
-    .card.white { color: #95a5a6; }
-    .card.yellow { color: #f1c40f; }
+    /* Card background colors will be set by JS or specific classes like .card.back */
+    /* Text color for specific card backgrounds */
+    .card.white, .card.yellow {
+      color: #333; /* Dark text for light card backgrounds */
+    }
     .card.back {
       background-color: #34495e;
-      color: white;
+      color: white; /* Explicitly white for back */
     }
     .expedition {
       display: flex;
@@ -101,7 +105,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start; /* Ensure cards stack from the top */
-      height: 350px; /* Max height: 1st card (75px) + 11 more cards (11 * 25px = 275px) = 350px */
+      height: 355px; /* Max height: 1st card (80px) + 11 more cards (11 * 25px = 275px) = 355px */
       /* gap: 2px; /* Removed gap for overlapping */
     }
     /* .discard-piles (container) styles removed */
@@ -515,21 +519,25 @@
       gameState.hand.forEach((card, index) => {
         const cardEl = document.createElement('div');
         cardEl.className = 'card';
-        cardEl.classList.add(card.color);
+        // cardEl.classList.add(card.color); // Color class for text, background set directly
+        if (card.color === 'white' || card.color === 'yellow') {
+          cardEl.classList.add(card.color); // Add class for light background text color rule
+        }
+        cardEl.style.backgroundColor = getColorCode(card.color); // Apply background color
         cardEl.dataset.index = index;
         cardEl.dataset.color = card.color;
         cardEl.dataset.value = card.value;
         
         const valueEl = document.createElement('div');
         valueEl.className = 'card-value';
-        valueEl.textContent = card.value === 0 ? '★' : card.value;
+        valueEl.textContent = card.value === 0 ? '💰' : card.value; // Using a money bag for wager
         
-        const suitEl = document.createElement('div');
-        suitEl.className = 'card-suit';
-        suitEl.textContent = capitalizeFirstLetter(card.color);
+        // const suitEl = document.createElement('div'); // Removed suit
+        // suitEl.className = 'card-suit'; // Removed suit
+        // suitEl.textContent = capitalizeFirstLetter(card.color); // Removed suit
         
         cardEl.appendChild(valueEl);
-        cardEl.appendChild(suitEl);
+        // cardEl.appendChild(suitEl); // Removed suit
         
         if (gameState.selectedCard === index) {
           cardEl.style.border = '3px solid black';
@@ -555,16 +563,20 @@
         gameState.playerExpeditions[color].forEach(card => {
           const cardEl = document.createElement('div');
           cardEl.className = 'card';
-          cardEl.classList.add(color);
+          // cardEl.classList.add(color); // Background set directly
+          if (card.color === 'white' || card.color === 'yellow') {
+            cardEl.classList.add(card.color); // Add class for light background text color rule
+          }
+          cardEl.style.backgroundColor = getColorCode(color);
           
           const valueEl = document.createElement('div');
           valueEl.className = 'card-value';
-          valueEl.textContent = card.value === 0 ? '★' : card.value;
+          valueEl.textContent = card.value === 0 ? '💰' : card.value;
           
           cardEl.appendChild(valueEl);
           
           if (playerExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
-            cardEl.style.marginTop = '-50px'; // 75px card height - 25px visible top = 50px overlap
+            cardEl.style.marginTop = '-55px'; // 80px card height - 25px visible top = 55px overlap
           }
           playerExpEl.appendChild(cardEl);
         });
@@ -573,16 +585,20 @@
         gameState.opponentExpeditions[color].forEach(card => {
           const cardEl = document.createElement('div');
           cardEl.className = 'card';
-          cardEl.classList.add(color);
+          // cardEl.classList.add(color); // Background set directly
+          if (card.color === 'white' || card.color === 'yellow') {
+            cardEl.classList.add(card.color); // Add class for light background text color rule
+          }
+          cardEl.style.backgroundColor = getColorCode(color);
           
           const valueEl = document.createElement('div');
           valueEl.className = 'card-value';
-          valueEl.textContent = card.value === 0 ? '★' : card.value;
+          valueEl.textContent = card.value === 0 ? '💰' : card.value;
           
           cardEl.appendChild(valueEl);
 
           if (opponentExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
-            cardEl.style.marginTop = '-50px';
+            cardEl.style.marginTop = '-55px';
           }
           opponentExpEl.appendChild(cardEl);
         });
@@ -605,8 +621,16 @@
         
         if (discardPile.length > 0) {
           const topCard = discardPile[discardPile.length - 1];
-          discardEl.innerHTML = `<div class="card-value">${topCard.value === 0 ? '★' : topCard.value}</div>`;
+          discardEl.style.backgroundColor = getColorCode(topCard.color);
+          if (topCard.color === 'white' || topCard.color === 'yellow') {
+            discardEl.style.color = '#333';
+          } else {
+            discardEl.style.color = '#fff';
+          }
+          discardEl.innerHTML = `<div class="card-value">${topCard.value === 0 ? '💰' : topCard.value}</div>`;
         } else {
+          discardEl.style.backgroundColor = 'rgba(0,0,0,0.05)'; // Placeholder background
+          discardEl.style.color = '#333'; // Placeholder text color
           discardEl.innerHTML = '<div class="card-value">-</div>';
         }
         
@@ -854,24 +878,24 @@
 
     function getColorCode(color) {
       const colorCodes = {
-        red: '#e74c3c',
-        green: '#2ecc71',
-        blue: '#3498db',
-        white: '#95a5a6',
-        yellow: '#f1c40f'
+        red: '#d32f2f',     // Material Red 700
+        green: '#388e3c',   // Material Green 700
+        blue: '#1976d2',    // Material Blue 700
+        white: '#bdbdbd',   // Material Grey 400 (for "white" cards)
+        yellow: '#fbc02d'   // Material Yellow 700
       };
-      return colorCodes[color] || '#000000';
+      return colorCodes[color] || '#757575'; // Default to a mid-grey
     }
 
     function getPastelColorCode(color) {
       const pastelColorCodes = {
-        red: '#ffcccb',     // Light Red
-        green: '#90ee90',   // Light Green
-        blue: '#add8e6',    // Light Blue
-        white: '#f5f5f5',   // Off-White (very light gray)
-        yellow: '#ffffcc'   // Light Yellow
+        red: '#ffdddd',     // Lighter Red
+        green: '#ddffdd',   // Lighter Green
+        blue: '#ddeeff',    // Lighter Blue
+        white: '#f8f8f8',   // Very Light Grey (almost white)
+        yellow: '#ffffdd'   // Lighter Yellow
       };
-      return pastelColorCodes[color] || '#e0e0e0'; // Default to a light gray
+      return pastelColorCodes[color] || '#f0f0f0'; // Default to a light gray
     }
 
     // Socket event handlers
