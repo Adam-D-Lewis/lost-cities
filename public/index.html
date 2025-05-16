@@ -83,13 +83,14 @@
       justify-content: center; 
       align-items: center;
       font-weight: 700; /* Bolder */
-      font-size: 1.2em; 
+      /* font-size: 1.2em; Removed, will be controlled by specific value elements */
       cursor: pointer;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
       border: 1px solid #333; /* Added a dark border for better visibility */
-      position: relative;
+      position: relative; /* Ensures corner values are positioned relative to the card */
       transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
       color: #fff; 
+      overflow: hidden; /* Ensures corner values don't stick out if too large */
     }
     .card:hover {
       transform: translateY(-6px) scale(1.03);
@@ -256,14 +257,27 @@
       padding: 10px;
       min-width: 80px; /* Give deck area some width */
     }
-    .card-value {
-      font-size: 18px; /* Reduced font size */
-      font-weight: bold;
+    .card-value { /* This will be the main, large, centered number */
+      font-size: 2.5em; /* Larger font for the central number */
+      font-weight: 700;
+      line-height: 1; /* Adjust line height for better centering */
     }
-    .card-suit {
-      font-size: 10px; /* Reduced font size */
-      margin-top: 3px; /* Reduced margin */
+    .card-value-corner {
+      position: absolute;
+      font-size: 0.8em; /* Smaller font for corner numbers */
+      font-weight: 600;
+      line-height: 1;
     }
+    .card-value-top-left {
+      top: 5px;
+      left: 7px;
+    }
+    .card-value-bottom-right {
+      bottom: 5px;
+      right: 7px;
+      transform: rotate(180deg); /* To make it appear upright from bottom right */
+    }
+    /* .card-suit styles removed as it's not used */
     .notification {
       position: fixed;
       top: 20px;
@@ -584,16 +598,23 @@
         cardEl.dataset.color = card.color;
         cardEl.dataset.value = card.value;
         
-        const valueEl = document.createElement('div');
-        valueEl.className = 'card-value';
-        valueEl.textContent = card.value === 0 ? '💰' : card.value; // Using a money bag for wager
+        const cardContent = card.value === 0 ? '💰' : card.value;
+
+        const valueTopLeftEl = document.createElement('div');
+        valueTopLeftEl.className = 'card-value-corner card-value-top-left';
+        valueTopLeftEl.textContent = cardContent;
         
-        // const suitEl = document.createElement('div'); // Removed suit
-        // suitEl.className = 'card-suit'; // Removed suit
-        // suitEl.textContent = capitalizeFirstLetter(card.color); // Removed suit
+        const valueCenterEl = document.createElement('div');
+        valueCenterEl.className = 'card-value';
+        valueCenterEl.textContent = cardContent;
         
-        cardEl.appendChild(valueEl);
-        // cardEl.appendChild(suitEl); // Removed suit
+        const valueBottomRightEl = document.createElement('div');
+        valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
+        valueBottomRightEl.textContent = cardContent;
+        
+        cardEl.appendChild(valueTopLeftEl);
+        cardEl.appendChild(valueCenterEl);
+        cardEl.appendChild(valueBottomRightEl);
         
         if (gameState.selectedCard === index) {
           cardEl.style.border = '3px solid black';
@@ -625,11 +646,23 @@
           }
           cardEl.style.backgroundColor = getColorCode(color);
           
-          const valueEl = document.createElement('div');
-          valueEl.className = 'card-value';
-          valueEl.textContent = card.value === 0 ? '💰' : card.value;
+          const cardContent = card.value === 0 ? '💰' : card.value;
+
+          const valueTopLeftEl = document.createElement('div');
+          valueTopLeftEl.className = 'card-value-corner card-value-top-left';
+          valueTopLeftEl.textContent = cardContent;
           
-          cardEl.appendChild(valueEl);
+          const valueCenterEl = document.createElement('div');
+          valueCenterEl.className = 'card-value';
+          valueCenterEl.textContent = cardContent;
+          
+          const valueBottomRightEl = document.createElement('div');
+          valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
+          valueBottomRightEl.textContent = cardContent;
+          
+          cardEl.appendChild(valueTopLeftEl);
+          cardEl.appendChild(valueCenterEl);
+          cardEl.appendChild(valueBottomRightEl);
           
           if (playerExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
             cardEl.style.marginTop = '-55px'; // 80px card height - 25px visible top = 55px overlap
@@ -647,11 +680,23 @@
           }
           cardEl.style.backgroundColor = getColorCode(color);
           
-          const valueEl = document.createElement('div');
-          valueEl.className = 'card-value';
-          valueEl.textContent = card.value === 0 ? '💰' : card.value;
+          const cardContent = card.value === 0 ? '💰' : card.value;
+
+          const valueTopLeftEl = document.createElement('div');
+          valueTopLeftEl.className = 'card-value-corner card-value-top-left';
+          valueTopLeftEl.textContent = cardContent;
           
-          cardEl.appendChild(valueEl);
+          const valueCenterEl = document.createElement('div');
+          valueCenterEl.className = 'card-value';
+          valueCenterEl.textContent = cardContent;
+          
+          const valueBottomRightEl = document.createElement('div');
+          valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
+          valueBottomRightEl.textContent = cardContent;
+          
+          cardEl.appendChild(valueTopLeftEl);
+          cardEl.appendChild(valueCenterEl);
+          cardEl.appendChild(valueBottomRightEl);
 
           if (opponentExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
             cardEl.style.marginTop = '-55px';
@@ -683,23 +728,40 @@
           } else {
             discardEl.style.color = '#fff';
           }
-          discardEl.innerHTML = `<div class="card-value">${topCard.value === 0 ? '💰' : topCard.value}</div>`;
+          
+          const cardContent = topCard.value === 0 ? '💰' : topCard.value;
+          discardEl.innerHTML = `
+            <div class="card-value-corner card-value-top-left">${cardContent}</div>
+            <div class="card-value">${cardContent}</div>
+            <div class="card-value-corner card-value-bottom-right">${cardContent}</div>
+          `;
           // Reset box-shadow and border to card defaults if a card is present
           discardEl.style.boxShadow = ''; // Will revert to CSS rule for .card
           discardEl.style.border = '';    // Will revert to CSS rule for .card
         } else {
           discardEl.style.backgroundColor = '#E9E9E9'; // Light grey background for empty pile
           discardEl.style.color = '#333'; // Placeholder text color
-          discardEl.innerHTML = '<div class="card-value">-</div>';
+          // For empty state, just a single central placeholder is fine.
+          discardEl.innerHTML = '<div class="card-value">-</div>'; 
           discardEl.style.boxShadow = 'inset 0px 1px 4px rgba(0, 0, 0, 0.2)'; // Subtle inset shadow
           discardEl.style.border = '1px dashed #777'; // Dashed border for empty state
         }
         
         // Add highlight if selected as target
+        // Reset border first, then apply if selected.
+        // The border style for empty discard piles is now set above.
+        // The default card border is handled by the .card class.
+        // So, we only need to handle the 'selected' black border.
         if (gameState.selectedTarget === `discard-${color}`) {
           discardEl.style.border = '3px solid black';
         } else {
-          discardEl.style.border = 'none';
+          // If not selected, and it's an empty pile, it keeps its dashed border.
+          // If not selected, and it's a card, it keeps its default .card border.
+          // So, if it's NOT empty and NOT selected, we ensure it has the default card border.
+          if (discardPile.length > 0) { // If it has a card
+             discardEl.style.border = '1px solid #333'; // Default card border
+          }
+          // If it's empty, the dashed border from above applies.
         }
       });
     }
