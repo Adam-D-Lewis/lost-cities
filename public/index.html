@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lost Cities - Local Network Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #e9e9e9; /* Slightly richer background */
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e9ecf1 100%);
       margin: 0;
       padding: 0;
-      color: #333; /* Default text color */
+      color: #4A4A4A; 
     }
     .container {
       max-width: 1200px;
@@ -19,18 +20,22 @@
       padding: 15px; /* Increased padding for better spacing */
     }
     h1 {
-      color: #2c3e50;
+      color: #333;
       text-align: center;
-      font-size: 2em; /* Slightly larger h1 */
-      margin-bottom: 15px;
+      font-size: 2.2em;
+      margin-bottom: 20px;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
     }
     .game-status {
       text-align: center;
-      font-size: 1em; /* Reduced font size */
-      margin-bottom: 10px; /* Reduced margin */
-      padding: 8px; /* Reduced padding */
-      background-color: #e2e2e2;
-      border-radius: 5px;
+      font-size: 1.1em; 
+      margin-bottom: 15px; 
+      padding: 12px 20px; 
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      font-weight: 600;
     }
     .scores {
       display: flex;
@@ -39,14 +44,17 @@
     }
     .score-card {
       background-color: white;
-      padding: 8px 15px; /* Reduced padding */
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      min-width: 120px; /* Reduced min-width */
+      padding: 12px 20px; 
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      min-width: 140px; 
       text-align: center;
+      transition: all 0.3s ease;
     }
     .score-card.active {
-      border: 2px solid #3498db;
+      border: 2px solid #5D9CEC; /* New accent color */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 4px rgba(93, 156, 236, 0.2); /* Glow effect */
+      transform: translateY(-3px);
     }
     .board {
       display: flex; /* To arrange columns and deck area side-by-side */
@@ -57,34 +65,35 @@
     /* .play-area styles removed */
     /* .expedition-area styles removed (or will be implicitly covered by .color-column structure) */
     .hand {
-      background-color: #3498db;
-      padding: 10px; /* Reduced padding */
-      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.05); /* More subtle background */
+      padding: 15px; 
+      border-radius: 12px;
       display: flex;
       justify-content: center;
-      gap: 5px; /* Reduced gap */
+      gap: 8px; 
+      margin-top: 15px; /* Added margin for spacing */
     }
     .card {
-      width: 55px; /* Increased width */
-      height: 80px; /* Increased height */
-      background-color: white; /* Default, will be overridden by color class */
-      border-radius: 6px; /* Slightly larger radius */
+      width: 60px; 
+      height: 90px; 
+      background-color: white; 
+      border-radius: 8px; 
       display: flex;
       flex-direction: column;
-      justify-content: center; /* Center value vertically */
+      justify-content: center; 
       align-items: center;
-      font-weight: bold;
-      font-size: 1.1em; /* Slightly larger font for card value */
+      font-weight: 700; /* Bolder */
+      font-size: 1.2em; 
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Enhanced shadow */
-      border: 1px solid rgba(0,0,0,0.1); /* Softer border */
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+      border: none; /* Removed border, rely on shadow */
       position: relative;
-      transition: transform 0.2s, box-shadow 0.2s;
-      color: #fff; /* Default text color for cards, good for dark backgrounds */
+      transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+      color: #fff; 
     }
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 10px 15px rgba(0,0,0,0.12), 0 4px 6px rgba(0,0,0,0.1);
     }
     /* Card background colors will be set by JS or specific classes like .card.back */
     /* Text color for specific card backgrounds */
@@ -112,44 +121,68 @@
     .controls {
       display: flex;
       justify-content: center;
-      gap: 10px; /* Reduced gap */
-      margin-bottom: 10px; /* Reduced margin */
+      gap: 12px; 
+      margin-top: 20px; /* Added margin for spacing */
+      margin-bottom: 20px; 
     }
     .btn {
-      padding: 8px 15px; /* Reduced padding */
-      background-color: #3498db;
+      padding: 10px 20px; 
+      background-color: #5D9CEC; /* New accent blue */
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 25px; /* Pill shape */
       cursor: pointer;
-      font-size: 14px; /* Reduced font size */
+      font-size: 14px; 
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: all 0.2s ease-in-out;
     }
     .btn:hover {
-      background-color: #2980b9;
+      background-color: #4A89DC; /* Darker shade */
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
     .btn:disabled {
-      background-color: #95a5a6;
+      background-color: #CCD1D9;
+      color: #777;
       cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
     .setup-screen {
-      max-width: 500px;
-      margin: 20px auto; /* Reduced margin */
-      padding: 20px; /* Reduced padding */
+      max-width: 450px; /* Slightly narrower */
+      margin: 40px auto; 
+      padding: 30px; 
       background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
       text-align: center;
     }
     .input-group {
-      margin-bottom: 15px; /* Reduced margin */
+      margin-bottom: 20px; 
+    }
+    .input-group label { /* Style labels */
+      display: block;
+      text-align: left;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #555;
     }
     input {
-      padding: 8px; /* Reduced padding */
-      width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 14px; /* Reduced font size */
+      padding: 12px 18px; 
+      width: calc(100% - 36px); /* Account for padding */
+      border: 1px solid #DAE1E7;
+      border-radius: 25px; /* Pill shape */
+      font-size: 15px; 
       margin-top: 5px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    input:focus {
+      outline: none;
+      border-color: #5D9CEC; /* New accent blue */
+      box-shadow: 0 0 0 3px rgba(93, 156, 236, 0.2);
     }
     /* .color-indicator styles removed */
     .expedition-label {
@@ -180,17 +213,18 @@
       display: flex;
       flex-grow: 1; /* Takes up available space */
       justify-content: space-around; /* Distributes columns */
-      gap: 10px; /* Space between color columns */
+      gap: 15px; /* Space between color columns */
     }
     .color-column {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px; /* Space between opponent exp, discard, player exp */
-      padding: 10px;
+      gap: 20px; /* Space between opponent exp, discard, player exp */
+      padding: 15px;
       /* background-color will be set dynamically by JS */
-      border-radius: 8px;
-      min-width: 80px; /* Ensure columns have some base width */
+      border-radius: 12px; /* More rounded */
+      min-width: 90px; /* Ensure columns have some base width */
+      transition: background-color 0.5s ease; /* Smooth bg color change */
     }
     .deck-area {
       display: flex;
@@ -878,24 +912,24 @@
 
     function getColorCode(color) {
       const colorCodes = {
-        red: '#d32f2f',     // Material Red 700
-        green: '#388e3c',   // Material Green 700
-        blue: '#1976d2',    // Material Blue 700
-        white: '#bdbdbd',   // Material Grey 400 (for "white" cards)
-        yellow: '#fbc02d'   // Material Yellow 700
+        red: '#EF5350',     // A softer, modern Red
+        green: '#66BB6A',   // A softer, modern Green
+        blue: '#42A5F5',    // A softer, modern Blue
+        white: '#BDBDBD',   // A light, neutral Grey for "white"
+        yellow: '#FFEE58'   // A vibrant, modern Yellow
       };
-      return colorCodes[color] || '#757575'; // Default to a mid-grey
+      return colorCodes[color] || '#9E9E9E'; // Default to a mid-grey
     }
 
     function getPastelColorCode(color) {
       const pastelColorCodes = {
-        red: '#ffdddd',     // Lighter Red
-        green: '#ddffdd',   // Lighter Green
-        blue: '#ddeeff',    // Lighter Blue
-        white: '#f8f8f8',   // Very Light Grey (almost white)
-        yellow: '#ffffdd'   // Lighter Yellow
+        red: '#FFEBEE',     // Light Red
+        green: '#E8F5E9',   // Light Green
+        blue: '#E3F2FD',    // Light Blue
+        white: '#FAFAFA',   // Very Light Grey (almost white)
+        yellow: '#FFFDE7'   // Light Yellow
       };
-      return pastelColorCodes[color] || '#f0f0f0'; // Default to a light gray
+      return pastelColorCodes[color] || '#F5F5F5'; // Default to a very light gray
     }
 
     // Socket event handlers
