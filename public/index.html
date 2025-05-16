@@ -56,6 +56,25 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 4px rgba(93, 156, 236, 0.2); /* Glow effect */
       transform: translateY(-3px);
     }
+    .color-scores {
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+    .color-score-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .color-score-item:last-child {
+      border-bottom: none;
+    }
+    .color-score-item .color-name {
+      font-weight: 600;
+    }
+    .color-score-item .score-value {
+      /* Style for the score value if needed */
+    }
     .board {
       display: flex; /* To arrange columns and deck area side-by-side */
       justify-content: space-between;
@@ -344,11 +363,17 @@
     <div class="scores">
       <div id="player-score" class="score-card">
         <h3 id="player-name">You: 0</h3>
-        <p>Score: <span id="player-score-value">0</span></p>
+        <p>Total Score: <span id="player-score-value">0</span></p>
+        <div class="color-scores" id="player-color-scores">
+          <!-- Player color scores will be populated here -->
+        </div>
       </div>
       <div id="opponent-score" class="score-card">
         <h3 id="opponent-name">Opponent: 0</h3>
-        <p>Score: <span id="opponent-score-value">0</span></p>
+        <p>Total Score: <span id="opponent-score-value">0</span></p>
+        <div class="color-scores" id="opponent-color-scores">
+          <!-- Opponent color scores will be populated here -->
+        </div>
       </div>
     </div>
 
@@ -422,7 +447,9 @@
       },
       deckCount: 60,
       playerScore: 0,
-      opponentScore: 0
+      opponentScore: 0,
+      playerScoreDetails: { red: 0, green: 0, blue: 0, white: 0, yellow: 0 },
+      opponentScoreDetails: { red: 0, green: 0, blue: 0, white: 0, yellow: 0 }
     };
 
     // Socket connection
@@ -774,8 +801,36 @@
       playerScoreEl.textContent = gameState.playerScore;
       opponentScoreEl.textContent = gameState.opponentScore;
       
-      playerNameEl.textContent = `${gameState.playerName}: ${gameState.playerScore}`;
-      opponentNameEl.textContent = `${gameState.opponentName}: ${gameState.opponentScore}`;
+      playerNameEl.textContent = `${gameState.playerName}`; // Name only, score is separate
+      opponentNameEl.textContent = `${gameState.opponentName}`; // Name only
+
+      const colors = ['red', 'green', 'blue', 'white', 'yellow'];
+
+      // Player color scores
+      const playerColorScoresEl = document.getElementById('player-color-scores');
+      playerColorScoresEl.innerHTML = ''; // Clear old scores
+      if (gameState.playerScoreDetails) {
+        colors.forEach(color => {
+          const scoreItem = document.createElement('div');
+          scoreItem.className = 'color-score-item';
+          const colorDisplayName = capitalizeFirstLetter(color);
+          scoreItem.innerHTML = `<span class="color-name" style="color:${getColorCode(color)};">${colorDisplayName}:</span> <span class="score-value">${gameState.playerScoreDetails[color] || 0}</span>`;
+          playerColorScoresEl.appendChild(scoreItem);
+        });
+      }
+
+      // Opponent color scores
+      const opponentColorScoresEl = document.getElementById('opponent-color-scores');
+      opponentColorScoresEl.innerHTML = ''; // Clear old scores
+      if (gameState.opponentScoreDetails) {
+        colors.forEach(color => {
+          const scoreItem = document.createElement('div');
+          scoreItem.className = 'color-score-item';
+          const colorDisplayName = capitalizeFirstLetter(color);
+          scoreItem.innerHTML = `<span class="color-name" style="color:${getColorCode(color)};">${colorDisplayName}:</span> <span class="score-value">${gameState.opponentScoreDetails[color] || 0}</span>`;
+          opponentColorScoresEl.appendChild(scoreItem);
+        });
+      }
     }
 
     function updateGameStatus() {
@@ -1034,6 +1089,10 @@
         // Ensure playerId from localStorage is preferred if this is an initial load/reconnect
         const localPId = localStorage.getItem('lostCitiesPlayerId');
         gameState = {...gameState, ...state };
+        // Ensure score details are objects even if not sent by server initially
+        gameState.playerScoreDetails = state.playerScoreDetails || { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
+        gameState.opponentScoreDetails = state.opponentScoreDetails || { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
+
         if (localPId && (!gameState.playerId || gameState.playerId !== localPId)) {
             // This case might occur if server sends state before reconnected event fully sets client's view
             // Or if server state's playerId is somehow different. Prioritize our known persistent ID.
@@ -1122,13 +1181,15 @@
       socket.on('gameOver', (data) => {
         // data.scores keys are persistentPlayerIds
         gameState.gamePhase = 'gameOver';
-        if (data.scores && gameState.playerId) {
-            gameState.playerScore = data.scores[gameState.playerId] || 0;
+        if (data.scores && gameState.playerId && data.scores[gameState.playerId]) {
+            gameState.playerScore = data.scores[gameState.playerId].total || 0;
+            gameState.playerScoreDetails = data.scores[gameState.playerId].details || { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
         }
         
         const opponentPersistentId = Object.keys(data.scores || {}).find(id => id !== gameState.playerId);
-        if (opponentPersistentId && data.scores) {
-          gameState.opponentScore = data.scores[opponentPersistentId] || 0;
+        if (opponentPersistentId && data.scores && data.scores[opponentPersistentId]) {
+          gameState.opponentScore = data.scores[opponentPersistentId].total || 0;
+          gameState.opponentScoreDetails = data.scores[opponentPersistentId].details || { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
         }
         
         let message = 'Game over! ';
