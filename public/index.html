@@ -712,7 +712,7 @@
         canDrawFromDiscard = true;
       }
       // For debugging, you might uncomment this log:
-      // console.log(`UPDATE_CONTROLS_DRAW_DISCARD: isPlayerTurn=${isPlayerTurn}, isDrawCardPhase=${isDrawCardPhase}, targetIsSelected=${targetIsSelected}, selectedTarget="${gameState.selectedTarget}", canDrawFromDiscard=${canDrawFromDiscard}`);
+      console.log(`DEBUG: updateControls - DrawDiscard: isPlayerTurn=${isPlayerTurn}, isDrawCardPhase=${isDrawCardPhase}, targetIsSelected=${targetIsSelected}, selectedTarget="${gameState.selectedTarget}", typeof selectedTarget="${typeof gameState.selectedTarget}", canDrawFromDiscard=${canDrawFromDiscard}`);
       drawDiscardBtn.disabled = !canDrawFromDiscard;
     }
 
@@ -755,9 +755,11 @@
       // Can't draw from empty discard pile
       if (gameState.gamePhase === 'drawCard' && gameState.discardPiles[color].length === 0) {
         showNotification("Can't draw from an empty discard pile");
+        console.log(`DEBUG: selectDiscardTarget - Attempted to select empty discard pile: ${color}`);
         return;
       }
       
+      console.log(`DEBUG: selectDiscardTarget - Color: ${color}, Current Phase: ${gameState.gamePhase}, Pile content:`, JSON.stringify(gameState.discardPiles[color]));
       if (gameState.selectedTarget === `discard-${color}`) {
         gameState.selectedTarget = null;
       } else {
@@ -913,6 +915,7 @@
             // However, the server should be authoritative on game state.
             // The key is that gameState.playerId on client should be the persistentId.
         }
+        console.log(`DEBUG: socket.on('gameState') - Received gamePhase: ${state.gamePhase}, currentTurn: ${state.currentTurn}, client's playerId: ${gameState.playerId}`);
         renderGameState();
       });
 
