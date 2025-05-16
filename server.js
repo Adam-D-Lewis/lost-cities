@@ -613,3 +613,15 @@ function getLocalIpAddress() {
   
   return 'localhost';
 }
+
+// Export functions for testing
+module.exports = {
+  createDeck,
+  shuffleDeck,
+  dealHand,
+  calculateScore,
+  isGameOver
+  // Note: getGameStateForPlayer, sendGameStateToPlayer, sendGameStateToPlayers, startGame, getLocalIpAddress
+  // are not easily unit-testable without more significant refactoring or mocking io/games/players,
+  // so they are omitted for now. Focus is on pure helper functions.
+};

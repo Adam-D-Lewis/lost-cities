@@ -18,6 +18,7 @@ A web-based implementation of the classic card game Lost Cities that runs on you
 ```bash
 npm init -y
 npm install express socket.io
+npm install --save-dev jest 
 ```
 
 ### Running the Game
@@ -80,3 +81,11 @@ On your turn:
 - Restart the server if any issues occur
 
 Enjoy playing Lost Cities with your wife!
+
+## Running Tests
+
+To run the automated tests for the server logic:
+
+```bash
+npm test
+```
