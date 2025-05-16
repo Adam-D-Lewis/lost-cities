@@ -1181,24 +1181,41 @@
         return;
       }
 
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      const now = audioContext.currentTime;
+      const fundamentalHz = 523.25; // C5 note
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      // Frequencies for the bell sound (fundamental, a fifth, an octave)
+      const frequencies = [
+        fundamentalHz,
+        fundamentalHz * 1.5,
+        fundamentalHz * 2.0
+      ];
 
-      oscillator.type = 'sine'; // Type of sound wave
-      oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5 note
-      gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); // Volume (keep it low)
-      
-      // Ramp up gain quickly
-      gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+      // Gain values for each partial (fundamental is loudest)
+      const initialGains = [0.1, 0.07, 0.05];
+      // Decay times for each partial (overtones decay slightly faster)
+      const decayTimes = [1.0, 0.8, 0.6];
 
+      frequencies.forEach((freq, index) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
 
-      oscillator.start(audioContext.currentTime);
-      // Fade out and stop
-      gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.2);
-      oscillator.stop(audioContext.currentTime + 0.2); // Duration of the sound
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        // Set initial gain with a very quick attack
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(initialGains[index], now + 0.01);
+        
+        // Exponential decay
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + decayTimes[index]);
+
+        osc.start(now);
+        osc.stop(now + decayTimes[index] + 0.1); // Stop oscillator shortly after gain is negligible
+      });
     }
   </script>
 </body>
