@@ -693,9 +693,27 @@
       const isDrawCardPhase = gameState.gamePhase === 'drawCard';
       
       playCardBtn.disabled = !(isPlayerTurn && cardSelected && isSelectCardPhase);
-      discardCardBtn.disabled = !(isPlayerTurn && cardSelected && (!targetSelected || targetSelected.startsWith('discard')) && isSelectCardPhase);
+      // For discardCardBtn: enabled if it's player's turn, card selected, in selectCard phase, AND
+      // (no target is selected OR a discard pile is selected)
+      let canDiscard = false;
+      if (isPlayerTurn && cardSelected && isSelectCardPhase) {
+        // Ensure selectedTarget is a string before calling startsWith if targetIsSelected is true
+        if (!targetIsSelected || (targetIsSelected && typeof gameState.selectedTarget === 'string' && gameState.selectedTarge.startsWith('discard'))) {
+          canDiscard = true;
+        }
+      }
+      discardCardBtn.disabled = !canDiscard;
+      
       drawDeckBtn.disabled = !(isPlayerTurn && isDrawCardPhase);
-      drawDiscardBtn.disabled = !(isPlayerTurn && targetSelected && targetSelected.startsWith('discard') && isDrawCardPhase);
+      
+      let canDrawFromDiscard = false;
+      // Check player turn and phase first, then if a target is selected, then if it's a discard pile.
+      if (isPlayerTurn && isDrawCardPhase && targetIsSelected && typeof gameState.selectedTarget === 'string' && gameState.selectedTarget.startsWith('discard')) {
+        canDrawFromDiscard = true;
+      }
+      // For debugging, you might uncomment this log:
+      // console.log(`UPDATE_CONTROLS_DRAW_DISCARD: isPlayerTurn=${isPlayerTurn}, isDrawCardPhase=${isDrawCardPhase}, targetIsSelected=${targetIsSelected}, selectedTarget="${gameState.selectedTarget}", canDrawFromDiscard=${canDrawFromDiscard}`);
+      drawDiscardBtn.disabled = !canDrawFromDiscard;
     }
 
     // Game actions
