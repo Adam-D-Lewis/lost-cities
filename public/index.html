@@ -370,6 +370,7 @@
 
     // Socket connection
     let socket;
+    let audioContext; // For playing sounds
     
     // DOM Elements
     const setupScreen = document.getElementById('setup-screen');
@@ -925,9 +926,14 @@
       socket.on('turnChanged', (data) => {
         // data.currentTurn is persistentPlayerId
         gameState.currentTurn = data.currentTurn;
+        const previousTurn = gameState.currentTurn;
+        gameState.currentTurn = data.currentTurn;
         gameState.gamePhase = data.gamePhase;
         
-        if (data.currentTurn === gameState.playerId) {
+        if (gameState.currentTurn === gameState.playerId) {
+          if (previousTurn !== gameState.playerId) { // Play sound only if it just became our turn
+            playTurnSound();
+          }
           addToHistory('Your turn');
         } else {
           addToHistory(`${gameState.opponentName}'s turn`);
@@ -1031,6 +1037,9 @@
 
     function connectToServer(serverAddress, isCreatingGame, isJoiningGame) {
       try {
+        if (!audioContext) { // Initialize AudioContext on first user gesture
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
         if (socket && socket.connected) {
             socket.disconnect(); // Disconnect existing socket if any before creating new
         }
@@ -1160,6 +1169,36 @@
         localStorage.setItem('lostCitiesServerAddress', serverAddressInput.value.trim());
       });
     });
+
+    // Function to play a turn notification sound
+    function playTurnSound() {
+      if (!audioContext || audioContext.state === 'suspended') {
+        audioContext.resume(); // Attempt to resume if suspended
+      }
+      if (!audioContext || audioContext.state !== 'running') {
+        console.warn('AudioContext not running, cannot play sound.');
+        return;
+      }
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.type = 'sine'; // Type of sound wave
+      oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5 note
+      gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); // Volume (keep it low)
+      
+      // Ramp up gain quickly
+      gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+
+
+      oscillator.start(audioContext.currentTime);
+      // Fade out and stop
+      gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.2);
+      oscillator.stop(audioContext.currentTime + 0.2); // Duration of the sound
+    }
   </script>
 </body>
 </html>
