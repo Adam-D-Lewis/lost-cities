@@ -712,7 +712,7 @@
         canDrawFromDiscard = true;
       }
       // For debugging, you might uncomment this log:
-      console.log(`DEBUG: updateControls - DrawDiscard: isPlayerTurn=${isPlayerTurn}, isDrawCardPhase=${isDrawCardPhase}, targetIsSelected=${targetIsSelected}, selectedTarget="${gameState.selectedTarget}", typeof selectedTarget="${typeof gameState.selectedTarget}", canDrawFromDiscard=${canDrawFromDiscard}`);
+      console.log(`DEBUG: updateControls - DrawDiscard: isPlayerTurn=${isPlayerTurn}, isDrawCardPhase=${isDrawCardPhase}, targetSelected=${targetSelected}, selectedTarget="${gameState.selectedTarget}", typeof selectedTarget="${typeof gameState.selectedTarget}", canDrawFromDiscard=${canDrawFromDiscard}`);
       drawDiscardBtn.disabled = !canDrawFromDiscard;
     }
 
