@@ -105,6 +105,27 @@
       color: #fff; 
       overflow: hidden; /* Ensures corner values don't stick out if too large */
     }
+
+    /* General pseudo-element for card patterns */
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-repeat: repeat;
+      background-size: auto; /* Or a specific size if patterns are too large/small */
+      opacity: 0.15; /* Opacity for the pattern layer on cards */
+      z-index: 0; /* Places it above the card's own background-color, but below content */
+      pointer-events: none; /* So it doesn't interfere with card interactions */
+    }
+
+    /* Specific patterns for each theme on cards */
+    .card.theme-red::before    { background-image: url('assets/fire-pattern.svg'); }
+    .card.theme-green::before  { background-image: url('assets/lotr-warrior-pattern.svg'); }
+    .card.theme-blue::before   { background-image: url('assets/atlantis-pattern.svg'); }
+    .card.theme-white::before  { background-image: url('assets/aztec-pattern.svg'); }
+    .card.theme-yellow::before { background-image: url('assets/egypt-pattern.svg'); }
+
     .card:hover {
       transform: translateY(-6px) scale(1.03);
       box-shadow: 0 10px 15px rgba(0,0,0,0.12), 0 4px 6px rgba(0,0,0,0.1);
@@ -696,6 +717,7 @@
         if (card.color === 'white' || card.color === 'yellow') {
           cardEl.classList.add(card.color); // Add class for light background text color rule
         }
+        cardEl.classList.add('theme-' + card.color); // Add theme class for pattern
         cardEl.style.backgroundColor = getColorCode(card.color); // Apply background color
         cardEl.dataset.index = index;
         cardEl.dataset.color = card.color;
@@ -750,6 +772,7 @@
           if (card.color === 'white' || card.color === 'yellow') {
             cardEl.classList.add(card.color); // Add class for light background text color rule
           }
+          cardEl.classList.add('theme-' + card.color); // Add theme class for pattern
           cardEl.style.backgroundColor = getColorCode(color);
           
           const cardContent = card.value === 0 ? '💰' : card.value;
@@ -787,6 +810,7 @@
           if (card.color === 'white' || card.color === 'yellow') {
             cardEl.classList.add(card.color); // Add class for light background text color rule
           }
+          cardEl.classList.add('theme-' + card.color); // Add theme class for pattern
           cardEl.style.backgroundColor = getColorCode(color);
           
           const cardContent = card.value === 0 ? '💰' : card.value;
@@ -831,9 +855,14 @@
       colors.forEach(color => {
         const discardEl = document.getElementById(`discard-${color}`);
         const discardPile = gameState.discardPiles[color];
+        const colorsForThemes = ['red', 'green', 'blue', 'white', 'yellow'];
+
+        // Clear any existing theme classes first
+        colorsForThemes.forEach(c => discardEl.classList.remove('theme-' + c));
         
         if (discardPile.length > 0) {
           const topCard = discardPile[discardPile.length - 1];
+          discardEl.classList.add('theme-' + topCard.color); // Add theme class for pattern
           discardEl.style.backgroundColor = getColorCode(topCard.color);
           if (topCard.color === 'white' || topCard.color === 'yellow') {
             discardEl.style.color = '#333';
