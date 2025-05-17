@@ -795,6 +795,9 @@
         opponentExpEl.innerHTML = '';
         
         // Render player expedition
+        const playerColumnEl = playerExpEl.closest('.color-column');
+        const playerColumnWidth = playerColumnEl ? playerColumnEl.offsetWidth : 60; // Fallback to min-width
+
         gameState.playerExpeditions[color].forEach(card => {
           const cardEl = document.createElement('div');
           cardEl.className = 'card';
@@ -826,11 +829,11 @@
           if (playerPosIndex === 0) { // 1st, 5th, etc. card: Left
             horizontalOffsetPlayer = '0px';
           } else if (playerPosIndex === 1) { // 2nd, 6th, etc. card: Middle
-            horizontalOffsetPlayer = '10px';
+            horizontalOffsetPlayer = Math.round(playerColumnWidth / 3) + 'px';
           } else if (playerPosIndex === 2) { // 3rd, 7th, etc. card: Right
-            horizontalOffsetPlayer = '20px';
+            horizontalOffsetPlayer = Math.round(playerColumnWidth * 2 / 3) + 'px';
           } else { // playerPosIndex === 3, 4th, 8th, etc. card: Middle
-            horizontalOffsetPlayer = '10px';
+            horizontalOffsetPlayer = Math.round(playerColumnWidth / 3) + 'px';
           }
           
           cardEl.style.left = horizontalOffsetPlayer;
@@ -841,6 +844,9 @@
         });
         
         // Render opponent expedition
+        const opponentColumnEl = opponentExpEl.closest('.color-column');
+        const opponentColumnWidth = opponentColumnEl ? opponentColumnEl.offsetWidth : 60; // Fallback to min-width
+
         gameState.opponentExpeditions[color].forEach(card => {
           const cardEl = document.createElement('div');
           cardEl.className = 'card';
@@ -872,11 +878,11 @@
           if (opponentPosIndex === 0) { // 1st, 5th, etc. card: Left
             horizontalOffsetOpponent = '0px';
           } else if (opponentPosIndex === 1) { // 2nd, 6th, etc. card: Middle
-            horizontalOffsetOpponent = '10px';
+            horizontalOffsetOpponent = Math.round(opponentColumnWidth / 3) + 'px';
           } else if (opponentPosIndex === 2) { // 3rd, 7th, etc. card: Right
-            horizontalOffsetOpponent = '20px';
+            horizontalOffsetOpponent = Math.round(opponentColumnWidth * 2 / 3) + 'px';
           } else { // opponentPosIndex === 3, 4th, 8th, etc. card: Middle
-            horizontalOffsetOpponent = '10px';
+            horizontalOffsetOpponent = Math.round(opponentColumnWidth / 3) + 'px';
           }
           
           cardEl.style.left = horizontalOffsetOpponent;
