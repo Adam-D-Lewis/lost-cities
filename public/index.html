@@ -433,10 +433,6 @@
     <div id="game-status" class="game-status">Waiting for opponent...</div>
     
     <div class="scores">
-      <div id="player-score" class="score-card">
-        <h3 id="player-name">You: 0</h3>
-        <p>Total Score: <span id="player-score-value">0</span></p>
-      </div>
       <div id="opponent-score" class="score-card">
         <h3 id="opponent-name">Opponent: 0</h3>
         <p>Total Score: <span id="opponent-score-value">0</span></p>
@@ -458,6 +454,10 @@
           </div>
           <div class="deck-count" id="deck-count">60</div>
         </div>
+        <div id="player-total-score-in-deck-area">
+          Your Score: <span id="player-score-value-in-deck-area">0</span>
+        </div>
+        <button id="toggle-log-btn" class="btn">Toggle Log</button>
       </div>
     </div>
       
@@ -537,12 +537,12 @@
     const discardCardBtn = document.getElementById('discard-card');
     const drawDeckBtn = document.getElementById('draw-deck');
     const drawDiscardButtonsContainerEl = document.getElementById('draw-discard-buttons-container');
-    const playerScoreEl = document.getElementById('player-score-value');
     const opponentScoreEl = document.getElementById('opponent-score-value');
-    const playerNameEl = document.getElementById('player-name');
     const opponentNameEl = document.getElementById('opponent-name');
     const notificationEl = document.getElementById('notification');
     const historyLogEl = document.getElementById('history-log');
+    const playerScoreValueInDeckAreaEl = document.getElementById('player-score-value-in-deck-area');
+    const toggleLogBtnEl = document.getElementById('toggle-log-btn');
     const serverInfoEl = document.getElementById('server-info');
 
     // Show notification
@@ -859,10 +859,10 @@
     }
 
     function updateScores() {
-      playerScoreEl.textContent = gameState.playerScore;
+      if (playerScoreValueInDeckAreaEl) playerScoreValueInDeckAreaEl.textContent = gameState.playerScore;
       opponentScoreEl.textContent = gameState.opponentScore;
       
-      playerNameEl.textContent = `${gameState.playerName}`; // Name only, score is separate
+      // playerNameEl is removed as its container was removed. Player's name is in gameState.playerName if needed elsewhere.
       opponentNameEl.textContent = `${gameState.opponentName}`; // Name only
 
       const colors = ['red', 'green', 'blue', 'white', 'yellow'];
@@ -883,10 +883,9 @@
     }
 
     function updateGameStatus() {
-      const playerScoreCard = document.getElementById('player-score');
       const opponentScoreCard = document.getElementById('opponent-score');
       
-      playerScoreCard.classList.remove('active');
+      // playerScoreCard is removed, so no active class for it.
       opponentScoreCard.classList.remove('active');
       
       if (gameState.gamePhase === 'waiting') {
@@ -894,7 +893,7 @@
       } else if (gameState.gamePhase === 'gameOver') {
         gameStatus.textContent = 'Game Over!';
       } else if (gameState.currentTurn === gameState.playerId) {
-        playerScoreCard.classList.add('active');
+        // No player score card to highlight, gameStatus text indicates turn.
         
         if (gameState.gamePhase === 'selectCard') {
           if (gameState.selectedCard !== null) {
@@ -1349,6 +1348,17 @@
     drawDeckBtn.addEventListener('click', drawFromDeck);
     
     // Draw discard button click handler (old generic button's listener is removed as button is removed)
+
+    // Toggle Log button click handler
+    if (toggleLogBtnEl) {
+      toggleLogBtnEl.addEventListener('click', () => {
+        if (historyLogEl.style.display === 'none') {
+          historyLogEl.style.display = 'block';
+        } else {
+          historyLogEl.style.display = 'none';
+        }
+      });
+    }
 
     // Initial page load logic
     document.addEventListener('DOMContentLoaded', () => {
