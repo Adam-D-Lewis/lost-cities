@@ -253,8 +253,9 @@
       background: linear-gradient(135deg, #1E90FF, #00008B); /* DodgerBlue to DarkBlue */
       color: white; /* Text color for dark backgrounds */
     }
-    .color-column.theme-white { /* Dwarf themed */
-      background: linear-gradient(135deg, #D3D3D3, #A9A9A9); /* LightGray to DarkGray */
+    .color-column.theme-white { /* Dwarf themed with Aztec pattern */
+      background: url('assets/aztec-pattern.svg') repeat, linear-gradient(135deg, #D3D3D3, #A9A9A9); /* SVG pattern on top of gradient */
+      background-size: auto, auto; /* Default size for SVG, auto for gradient */
       /* Consider adding a subtle texture or pattern here if possible with CSS */
     }
     .color-column.theme-yellow { /* Egyptian themed */
