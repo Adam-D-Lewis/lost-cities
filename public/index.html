@@ -710,6 +710,9 @@
         const valueCenterEl = document.createElement('div');
         valueCenterEl.className = 'card-value';
         valueCenterEl.textContent = cardContent;
+        if (card.value === 6 || card.value === 9) {
+          valueCenterEl.style.textDecoration = 'underline';
+        }
         
         const valueBottomRightEl = document.createElement('div');
         valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
@@ -758,6 +761,9 @@
           const valueCenterEl = document.createElement('div');
           valueCenterEl.className = 'card-value';
           valueCenterEl.textContent = cardContent;
+          if (card.value === 6 || card.value === 9) {
+            valueCenterEl.style.textDecoration = 'underline';
+          }
           
           const valueBottomRightEl = document.createElement('div');
           valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
@@ -792,6 +798,9 @@
           const valueCenterEl = document.createElement('div');
           valueCenterEl.className = 'card-value';
           valueCenterEl.textContent = cardContent;
+          if (card.value === 6 || card.value === 9) {
+            valueCenterEl.style.textDecoration = 'underline';
+          }
           
           const valueBottomRightEl = document.createElement('div');
           valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
@@ -833,9 +842,10 @@
           }
           
           const cardContent = topCard.value === 0 ? '💰' : topCard.value;
+          const underlineStyle = (topCard.value === 6 || topCard.value === 9) ? 'text-decoration: underline;' : '';
           discardEl.innerHTML = `
             <div class="card-value-corner card-value-top-left">${cardContent}</div>
-            <div class="card-value">${cardContent}</div>
+            <div class="card-value" style="${underlineStyle}">${cardContent}</div>
             <div class="card-value-corner card-value-bottom-right">${cardContent}</div>
           `;
           // Reset box-shadow and border to card defaults if a card is present
