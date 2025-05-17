@@ -345,13 +345,28 @@
       z-index: 0;
     }
 
-    .deck-area {
+.deck-area {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center; /* Center deck vertically */
+      justify-content: space-around; /* Space out deck, score, button */
       padding: 10px;
-      min-width: 80px; /* Give deck area some width */
+      min-width: 120px; /* Increased min-width to accommodate button text */
+      height: 100%; /* Try to fill vertical space if parent allows */
+    }
+    #player-total-score-in-deck-area {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-top: 15px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    #toggle-log-btn {
+      margin-top: auto; /* Pushes button towards the bottom if deck-area has extra space */
+      margin-bottom: 10px; /* Space from bottom edge */
+      padding: 8px 15px; /* Slightly smaller button */
+      font-size: 13px;
     }
     .card-value { /* This will be the main, large, centered number */
       font-size: 2.8em; /* Slightly reduced to prevent clipping */
