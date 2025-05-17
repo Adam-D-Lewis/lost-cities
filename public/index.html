@@ -842,14 +842,16 @@
           // Determine horizontal offset based on card index for left-middle-right-middle pattern
           let horizontalOffsetPlayer;
           const playerPosIndex = playerCardIndex % 4;
+          const baseOffset1Player = Math.round(playerColumnWidth / 3);
+          const baseOffset2Player = Math.round(playerColumnWidth * 2 / 3);
           if (playerPosIndex === 0) { // 1st, 5th, etc. card: Left
             horizontalOffsetPlayer = '-8px'; // Shifted left to reduce gap from column edge
           } else if (playerPosIndex === 1) { // 2nd, 6th, etc. card: Middle
-            horizontalOffsetPlayer = Math.round(playerColumnWidth / 3) + 'px';
+            horizontalOffsetPlayer = (baseOffset1Player - 8) + 'px';
           } else if (playerPosIndex === 2) { // 3rd, 7th, etc. card: Right
-            horizontalOffsetPlayer = Math.round(playerColumnWidth * 2 / 3) + 'px';
+            horizontalOffsetPlayer = (baseOffset2Player - 8) + 'px';
           } else { // playerPosIndex === 3, 4th, 8th, etc. card: Middle
-            horizontalOffsetPlayer = Math.round(playerColumnWidth / 3) + 'px';
+            horizontalOffsetPlayer = (baseOffset1Player - 8) + 'px';
           }
           
           cardEl.style.left = horizontalOffsetPlayer;
@@ -906,14 +908,16 @@
           // Determine horizontal offset based on card index for left-middle-right-middle pattern
           let horizontalOffsetOpponent;
           const opponentPosIndex = opponentCardIndex % 4;
+          const baseOffset1Opponent = Math.round(opponentColumnWidth / 3);
+          const baseOffset2Opponent = Math.round(opponentColumnWidth * 2 / 3);
           if (opponentPosIndex === 0) { // 1st, 5th, etc. card: Left
             horizontalOffsetOpponent = '-8px'; // Shifted left to reduce gap from column edge
           } else if (opponentPosIndex === 1) { // 2nd, 6th, etc. card: Middle
-            horizontalOffsetOpponent = Math.round(opponentColumnWidth / 3) + 'px';
+            horizontalOffsetOpponent = (baseOffset1Opponent - 8) + 'px';
           } else if (opponentPosIndex === 2) { // 3rd, 7th, etc. card: Right
-            horizontalOffsetOpponent = Math.round(opponentColumnWidth * 2 / 3) + 'px';
+            horizontalOffsetOpponent = (baseOffset2Opponent - 8) + 'px';
           } else { // opponentPosIndex === 3, 4th, 8th, etc. card: Middle
-            horizontalOffsetOpponent = Math.round(opponentColumnWidth / 3) + 'px';
+            horizontalOffsetOpponent = (baseOffset1Opponent - 8) + 'px';
           }
           
           cardEl.style.left = horizontalOffsetOpponent;
