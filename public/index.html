@@ -154,6 +154,10 @@
       height: 250px; /* Reduced height for mobile */
       /* display: flex, flex-direction, justify-content removed */
     }
+    .card-expedition-area {
+      align-self: flex-start; /* Align to the start of the color-column's cross-axis (left) */
+      width: 100%; /* Make the container utilize the full width of the color-column */
+    }
     /* .discard-piles (container) styles removed */
     .controls {
       display: flex;
@@ -665,7 +669,7 @@
 
         // 1. Opponent's Expedition Area
         const opponentExpeditionContainer = document.createElement('div');
-        opponentExpeditionContainer.className = 'expedition'; 
+        opponentExpeditionContainer.className = 'expedition card-expedition-area'; 
         
         const opponentLabel = document.createElement('div');
         opponentLabel.className = 'expedition-label';
@@ -709,7 +713,7 @@
 
         // 3. Player's Expedition Area
         const playerExpeditionContainer = document.createElement('div');
-        playerExpeditionContainer.className = 'expedition'; 
+        playerExpeditionContainer.className = 'expedition card-expedition-area'; 
         
         const playerLabel = document.createElement('div');
         playerLabel.className = 'expedition-label';
