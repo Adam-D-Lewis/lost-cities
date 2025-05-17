@@ -346,7 +346,7 @@
       display: flex;
       flex-direction: column;
       align-items: center; /* Center items horizontally */
-      /* justify-content: space-between; Removed, spacers will handle distribution */
+      justify-content: space-between; /* Distribute content to fill the column height */
       padding: 10px;
       min-width: 160px; /* Match color-column width for balance */
       height: 100%; 
@@ -520,14 +520,13 @@
           <div class="deck-count" id="deck-count">60</div>
         </div>
         <div class="deck-area-spacer"></div>
+        <div id="player-info-in-deck-area" class="score-card">
+          <h3 id="player-name-in-deck-area">You</h3>
+          <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
+        </div>
       </div>
     </div>
       
-    <div id="player-info-in-deck-area" class="score-card">
-      <h3 id="player-name-in-deck-area">You</h3>
-      <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
-    </div>
-    
     <div id="player-action-row">
       <div class="hand" id="player-hand">
           <!-- Player's hand will be rendered here -->
