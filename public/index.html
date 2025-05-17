@@ -87,8 +87,8 @@
       margin-top: 15px; /* Added margin for spacing */
     }
     .card {
-      width: 70px; 
-      height: 75px; 
+      width: 52px; /* 70px * 0.75 */
+      height: 56px; /* 75px * 0.75 */
       background-color: white; 
       border-radius: 8px; 
       display: flex;
@@ -148,7 +148,7 @@
     .expedition-cards {
       position: relative; /* For absolute positioning of cards */
       width: 160px; /* Fill content area of .color-column (160px min-width) */
-      height: 350px; /* Max height: 1st card (75px) + 11 more cards (11 * 25px = 275px) = 350px */
+      height: 287px; /* Max height: 1st card (56px) + 11 more cards (11 * 21px = 231px) = 287px */
       /* display: flex, flex-direction, justify-content removed */
     }
     /* .discard-piles (container) styles removed */
@@ -228,8 +228,8 @@
     }
     .deck {
       position: relative; /* No longer absolute */
-      width: 70px; 
-      height: 75px; 
+      width: 52px; 
+      height: 56px; 
       text-align: center;
     }
     .deck-count {
@@ -361,7 +361,7 @@
       min-width: 80px; /* Give deck area some width */
     }
     .card-value { /* This will be the main, large, centered number */
-      font-size: 2.5em; /* Larger font for the central number */
+      font-size: 3.0em; /* Increased to make numbers relatively larger on smaller cards */
       font-weight: 700;
       line-height: 1; /* Adjust line height for better centering */
       position: relative; /* Establish stacking context */
@@ -765,14 +765,14 @@
 
           cardEl.style.position = 'absolute';
           const playerCardIndex = playerExpEl.childNodes.length; // Index before appending
-          const verticalOffsetPlayer = playerCardIndex * 28; // Increased step up to 28px
+          const verticalOffsetPlayer = playerCardIndex * 21; // Adjusted step for smaller cards
           
           let horizontalOffsetPlayer = '0px'; // Default to left
           switch (playerCardIndex % 4) {
             case 0: horizontalOffsetPlayer = '0px'; break;   // Left
-            case 1: horizontalOffsetPlayer = '45px'; break;  // Center (160 - 70)/2
-            case 2: horizontalOffsetPlayer = '90px'; break;  // Right (160 - 70)
-            case 3: horizontalOffsetPlayer = '45px'; break;  // Center
+            case 1: horizontalOffsetPlayer = '54px'; break;  // Center (160 - 52)/2
+            case 2: horizontalOffsetPlayer = '108px'; break; // Right (160 - 52)
+            case 3: horizontalOffsetPlayer = '54px'; break;  // Center
           }
           
           cardEl.style.left = horizontalOffsetPlayer;
@@ -806,17 +806,17 @@
 
           cardEl.style.position = 'absolute';
           const opponentCardIndex = opponentExpEl.childNodes.length; // Index before appending
-          const verticalOffsetOpponent = opponentCardIndex * 28; // Increased step down to 28px
+          const verticalOffsetOpponent = opponentCardIndex * 21; // Adjusted step for smaller cards
           
           let horizontalOffsetOpponent = '0px'; // Default to left
           switch (opponentCardIndex % 4) {
-            case 0: horizontalOffsetOpponent = '0px'; break;   // Left
-            case 1: horizontalOffsetOpponent = '45px'; break;  // Center
-            case 2: horizontalOffsetOpponent = '90px'; break;  // Right
-            case 3: horizontalOffsetOpponent = '45px'; break;  // Center
+            case 0: horizontalOffsetPlayer = '0px'; break;   // Left
+            case 1: horizontalOffsetPlayer = '54px'; break;  // Center (160 - 52)/2
+            case 2: horizontalOffsetPlayer = '108px'; break; // Right (160 - 52)
+            case 3: horizontalOffsetPlayer = '54px'; break;  // Center
           }
           
-          cardEl.style.left = horizontalOffsetOpponent;
+          cardEl.style.left = horizontalOffsetPlayer;
           cardEl.style.top = verticalOffsetOpponent + 'px';
           cardEl.style.zIndex = opponentCardIndex;
 
