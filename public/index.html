@@ -365,12 +365,15 @@
       font-size: 2.5em; /* Larger font for the central number */
       font-weight: 700;
       line-height: 1; /* Adjust line height for better centering */
+      position: relative; /* Establish stacking context */
+      z-index: 1; /* Ensure it's above the ::before pseudo-element */
     }
     .card-value-corner {
       position: absolute;
       font-size: 0.8em; /* Smaller font for corner numbers */
       font-weight: 600;
       line-height: 1;
+      z-index: 1; /* Ensure it's above the ::before pseudo-element */
     }
     .card-value-top-left {
       top: 5px;
