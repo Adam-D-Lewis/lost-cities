@@ -1100,7 +1100,10 @@
       // Hide all buttons initially
       playCardBtn.style.display = 'none';
       discardCardBtn.style.display = 'none';
+      
       drawDeckBtn.style.display = 'none';
+      drawDeckBtn.classList.remove('btn-card-container'); // Ensure class forcing display is removed
+      
       drawDiscardButtonsContainerEl.innerHTML = ''; // Clear dynamic buttons
 
       const isPlayerTurn = gameState.currentTurn === gameState.playerId;
