@@ -368,22 +368,7 @@
       position: relative; /* Establish stacking context */
       z-index: 1; /* Ensure it's above the ::before pseudo-element */
     }
-    .card-value-corner {
-      position: absolute;
-      font-size: 0.8em; /* Smaller font for corner numbers */
-      font-weight: 600;
-      line-height: 1;
-      z-index: 1; /* Ensure it's above the ::before pseudo-element */
-    }
-    .card-value-top-left {
-      top: 5px;
-      left: 7px;
-    }
-    .card-value-bottom-right {
-      bottom: 5px;
-      right: 7px;
-      transform: rotate(180deg); /* To make it appear upright from bottom right */
-    }
+    /* .card-value-corner, .card-value-top-left, .card-value-bottom-right styles removed */
     /* .card-suit styles removed as it's not used */
     .empty-discard-text {
       font-size: 0.9em; /* Smaller font for "Discard" text */
@@ -728,10 +713,6 @@
         
         const cardContent = card.value === 0 ? '💰' : card.value;
 
-        const valueTopLeftEl = document.createElement('div');
-        valueTopLeftEl.className = 'card-value-corner card-value-top-left';
-        valueTopLeftEl.textContent = cardContent;
-        
         const valueCenterEl = document.createElement('div');
         valueCenterEl.className = 'card-value';
         valueCenterEl.textContent = cardContent;
@@ -739,13 +720,7 @@
           valueCenterEl.style.textDecoration = 'underline';
         }
         
-        const valueBottomRightEl = document.createElement('div');
-        valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
-        valueBottomRightEl.textContent = cardContent;
-        
-        cardEl.appendChild(valueTopLeftEl);
         cardEl.appendChild(valueCenterEl);
-        cardEl.appendChild(valueBottomRightEl);
         
         if (gameState.selectedCard === index) {
           cardEl.style.border = '3px solid black';
@@ -780,10 +755,6 @@
           
           const cardContent = card.value === 0 ? '💰' : card.value;
 
-          const valueTopLeftEl = document.createElement('div');
-          valueTopLeftEl.className = 'card-value-corner card-value-top-left';
-          valueTopLeftEl.textContent = cardContent;
-          
           const valueCenterEl = document.createElement('div');
           valueCenterEl.className = 'card-value';
           valueCenterEl.textContent = cardContent;
@@ -791,13 +762,7 @@
             valueCenterEl.style.textDecoration = 'underline';
           }
           
-          const valueBottomRightEl = document.createElement('div');
-          valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
-          valueBottomRightEl.textContent = cardContent;
-          
-          cardEl.appendChild(valueTopLeftEl);
           cardEl.appendChild(valueCenterEl);
-          cardEl.appendChild(valueBottomRightEl);
           
           if (playerExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
             cardEl.style.marginTop = '-50px'; // 75px card height - 25px visible top = 50px overlap
@@ -818,10 +783,6 @@
           
           const cardContent = card.value === 0 ? '💰' : card.value;
 
-          const valueTopLeftEl = document.createElement('div');
-          valueTopLeftEl.className = 'card-value-corner card-value-top-left';
-          valueTopLeftEl.textContent = cardContent;
-          
           const valueCenterEl = document.createElement('div');
           valueCenterEl.className = 'card-value';
           valueCenterEl.textContent = cardContent;
@@ -829,13 +790,7 @@
             valueCenterEl.style.textDecoration = 'underline';
           }
           
-          const valueBottomRightEl = document.createElement('div');
-          valueBottomRightEl.className = 'card-value-corner card-value-bottom-right';
-          valueBottomRightEl.textContent = cardContent;
-          
-          cardEl.appendChild(valueTopLeftEl);
           cardEl.appendChild(valueCenterEl);
-          cardEl.appendChild(valueBottomRightEl);
 
           if (opponentExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
             cardEl.style.marginTop = '-50px'; // 75px card height - 25px visible top = 50px overlap
@@ -876,9 +831,7 @@
           const cardContent = topCard.value === 0 ? '💰' : topCard.value;
           const underlineStyle = (topCard.value === 6 || topCard.value === 9) ? 'text-decoration: underline;' : '';
           discardEl.innerHTML = `
-            <div class="card-value-corner card-value-top-left">${cardContent}</div>
             <div class="card-value" style="${underlineStyle}">${cardContent}</div>
-            <div class="card-value-corner card-value-bottom-right">${cardContent}</div>
           `;
           // Reset box-shadow and border to card defaults if a card is present
           discardEl.style.boxShadow = ''; // Will revert to CSS rule for .card
