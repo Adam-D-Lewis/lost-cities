@@ -1114,6 +1114,11 @@
       
       drawDiscardButtonsContainerEl.innerHTML = ''; // Clear dynamic buttons
 
+      // If game is waiting for players, or over, no action buttons should be visible
+      if (gameState.gamePhase === 'waiting' || gameState.gamePhase === 'gameOver') {
+        return; // Exit early, all buttons remain hidden
+      }
+
       const isPlayerTurn = gameState.currentTurn === gameState.playerId;
       const cardSelected = gameState.selectedCard !== null;
       // targetSelected is used by updateGameStatus, so it's still relevant if calculated.
