@@ -357,6 +357,8 @@
       padding: 10px;
       width: 100%;
       box-sizing: border-box;
+      flex-direction: row !important; /* Force row layout even on mobile */
+      flex-wrap: nowrap !important; /* Prevent wrapping */
     }
     .score-and-deck-row .score-card {
       width: auto;
@@ -1463,14 +1465,21 @@
       if (isMobile) {
         // Mobile layout adjustments
         gameColumnsContainer.style.width = '100%';
-        scoreAndDeckRow.style.flexDirection = 'column';
-        scoreAndDeckRow.style.gap = '10px';
+        scoreAndDeckRow.style.gap = '5px'; // Smaller gap for mobile
         
-        // Make score cards full width on mobile
+        // Make score cards smaller on mobile
         document.querySelectorAll('.score-and-deck-row .score-card').forEach(card => {
-          card.style.width = '100%';
-          card.style.maxWidth = 'none';
+          card.style.width = 'auto';
+          card.style.maxWidth = '30%';
+          card.style.padding = '8px';
+          card.style.fontSize = '0.9em';
         });
+        
+        // Make deck smaller on mobile
+        const deckElement = document.querySelector('.score-and-deck-row .deck');
+        if (deckElement) {
+          deckElement.style.margin = '0 5px';
+        }
         
         // Adjust card positioning for smaller screens
         document.querySelectorAll('.expedition-cards .card').forEach(card => {
@@ -1493,13 +1502,21 @@
       } else {
         // Desktop layout adjustments
         gameColumnsContainer.style.width = '';
-        scoreAndDeckRow.style.flexDirection = '';
         scoreAndDeckRow.style.gap = '';
         
         // Reset score card width for desktop
         document.querySelectorAll('.score-and-deck-row .score-card').forEach(card => {
           card.style.width = 'auto';
+          card.style.maxWidth = '200px';
+          card.style.padding = '15px 30px';
+          card.style.fontSize = '';
         });
+        
+        // Reset deck margins for desktop
+        const deckElement = document.querySelector('.score-and-deck-row .deck');
+        if (deckElement) {
+          deckElement.style.margin = '';
+        }
       }
     }
 
