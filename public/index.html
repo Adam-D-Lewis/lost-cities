@@ -1171,11 +1171,41 @@
         // Update game state
         // Ensure playerId from localStorage is preferred if this is an initial load/reconnect
         const localPId = localStorage.getItem('lostCitiesPlayerId');
-        gameState = {...gameState, ...state };
-        // Ensure score details are objects even if not sent by server initially
-        gameState.playerScoreDetails = state.playerScoreDetails || { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
-        gameState.opponentScoreDetails = state.opponentScoreDetails || { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
+        gameState = {...gameState, ...state }; // Merge state from server. gameState now has the latest.
 
+        const currentPlayerId = gameState.playerId;
+        let opponentPlayerId = null;
+        if (gameState.players && currentPlayerId) {
+          opponentPlayerId = Object.keys(gameState.players).find(id => id !== currentPlayerId);
+        }
+
+        // Player scores processing
+        // Prioritize 'scores' object if present, then rely on flat properties from spread, then default.
+        if (gameState.scores && gameState.scores[currentPlayerId]) {
+          gameState.playerScore = gameState.scores[currentPlayerId].total;
+          gameState.playerScoreDetails = gameState.scores[currentPlayerId].details;
+        }
+        // Defaulting: If after merge and potential update from 'scores', values are still undefined, apply defaults.
+        if (gameState.playerScore === undefined) {
+          gameState.playerScore = 0;
+        }
+        if (gameState.playerScoreDetails === undefined) {
+          gameState.playerScoreDetails = { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
+        }
+
+        // Opponent scores processing
+        if (opponentPlayerId && gameState.scores && gameState.scores[opponentPlayerId]) {
+          gameState.opponentScore = gameState.scores[opponentPlayerId].total;
+          gameState.opponentScoreDetails = gameState.scores[opponentPlayerId].details;
+        }
+        // Defaulting for opponent
+        if (gameState.opponentScore === undefined) {
+          gameState.opponentScore = 0;
+        }
+        if (gameState.opponentScoreDetails === undefined) {
+          gameState.opponentScoreDetails = { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
+        }
+        
         if (localPId && (!gameState.playerId || gameState.playerId !== localPId)) {
             // This case might occur if server sends state before reconnected event fully sets client's view
             // Or if server state's playerId is somehow different. Prioritize our known persistent ID.
