@@ -1603,6 +1603,7 @@
       const isMobile = window.innerWidth < 768;
       const gameColumnsContainer = document.getElementById('game-columns-container');
       const scoreAndDeckRow = document.querySelector('.score-and-deck-row');
+      const expeditionCardAreas = document.querySelectorAll('.expedition-cards');
       
       if (isMobile) {
         // Mobile layout adjustments
@@ -1622,6 +1623,31 @@
         if (deckElement) {
           deckElement.style.margin = '0 5px';
         }
+
+        // Calculate and set dynamic height for expedition card areas on mobile
+        const defaultCardWidth = 40;
+        const defaultCardHeight = 45;
+        const originalVerticalStep = 28;
+        const verticalMobileScaleFactor = 0.7;
+        const maxCardsInExpedition = 12; // Max 3 wagers + 9 numbered cards
+
+        // Use a representative column width for calculation
+        const firstColumn = document.querySelector('.color-column');
+        const columnWidth = firstColumn ? firstColumn.offsetWidth : 60; // Fallback to CSS min-width
+
+        const expeditionCardMaxWidth = columnWidth / 3;
+        const targetWidth = Math.max(10, Math.min(expeditionCardMaxWidth, defaultCardWidth));
+        const targetHeight = targetWidth * (defaultCardHeight / defaultCardWidth);
+        
+        const verticalStepFactor = originalVerticalStep / defaultCardHeight;
+        const scaledVerticalStep = targetHeight * verticalStepFactor * verticalMobileScaleFactor;
+        
+        // Height needed is for (maxCardsInExpedition - 1) steps + height of one card, plus a small buffer
+        const calculatedHeight = (maxCardsInExpedition > 0 ? ((maxCardsInExpedition - 1) * scaledVerticalStep) + targetHeight : targetHeight) + 10; // +10px buffer
+
+        expeditionCardAreas.forEach(area => {
+          area.style.height = calculatedHeight + 'px';
+        });
         
         // Adjust card positioning for smaller screens
         document.querySelectorAll('.expedition-cards .card').forEach(card => {
@@ -1651,6 +1677,11 @@
         if (deckElement) {
           deckElement.style.margin = '';
         }
+
+        // Reset expedition card area height for desktop
+        expeditionCardAreas.forEach(area => {
+          area.style.height = '250px'; 
+        });
       }
     }
 
