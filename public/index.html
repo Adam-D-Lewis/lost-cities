@@ -1608,6 +1608,7 @@
       if (isMobile) {
         // Mobile layout adjustments
         gameColumnsContainer.style.width = '100%';
+        gameColumnsContainer.style.gap = '5px'; // Reduced gap for mobile
         scoreAndDeckRow.style.gap = '5px'; // Smaller gap for mobile
         
         // Make score cards smaller on mobile
@@ -1662,6 +1663,7 @@
       } else {
         // Desktop layout adjustments
         gameColumnsContainer.style.width = '';
+        gameColumnsContainer.style.gap = '10px'; // Reset gap for desktop
         scoreAndDeckRow.style.gap = '';
         
         // Reset score card width for desktop
