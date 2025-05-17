@@ -1180,23 +1180,35 @@
         }
 
         // Player scores processing
-        // Prioritize 'scores' object if present, then rely on flat properties from spread, then default.
+        // gameState already has data from ...state spread.
+        // Prioritize data from 'scores' object if it's valid and contains details.
         if (gameState.scores && gameState.scores[currentPlayerId]) {
-          gameState.playerScore = gameState.scores[currentPlayerId].total;
-          gameState.playerScoreDetails = gameState.scores[currentPlayerId].details;
+          if (gameState.scores[currentPlayerId].total !== undefined) {
+            gameState.playerScore = gameState.scores[currentPlayerId].total;
+          }
+          // Only update from scores.details if it's actually defined, otherwise keep what came from flat state.playerScoreDetails
+          if (gameState.scores[currentPlayerId].details !== undefined) {
+            gameState.playerScoreDetails = gameState.scores[currentPlayerId].details;
+          }
         }
-        // Defaulting: If after merge and potential update from 'scores', values are still undefined, apply defaults.
+        // Defaulting: If after all attempts, values are still undefined, apply defaults.
         if (gameState.playerScore === undefined) {
           gameState.playerScore = 0;
         }
         if (gameState.playerScoreDetails === undefined) {
+          // This means neither flat state.playerScoreDetails nor nested state.scores.pid.details was valid.
           gameState.playerScoreDetails = { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
         }
 
         // Opponent scores processing
         if (opponentPlayerId && gameState.scores && gameState.scores[opponentPlayerId]) {
-          gameState.opponentScore = gameState.scores[opponentPlayerId].total;
-          gameState.opponentScoreDetails = gameState.scores[opponentPlayerId].details;
+          if (gameState.scores[opponentPlayerId].total !== undefined) {
+            gameState.opponentScore = gameState.scores[opponentPlayerId].total;
+          }
+          // Only update from scores.details if it's actually defined
+          if (gameState.scores[opponentPlayerId].details !== undefined) {
+            gameState.opponentScoreDetails = gameState.scores[opponentPlayerId].details;
+          }
         }
         // Defaulting for opponent
         if (gameState.opponentScore === undefined) {
