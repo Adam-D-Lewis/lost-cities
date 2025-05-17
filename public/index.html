@@ -1608,7 +1608,9 @@
       if (isMobile) {
         // Mobile layout adjustments
         gameColumnsContainer.style.width = '100%';
-        gameColumnsContainer.style.gap = '5px'; // Reduced gap for mobile
+        gameColumnsContainer.style.gap = '3px'; // Further reduced gap for mobile
+        gameContainer.style.paddingLeft = '5px'; // Reduce side padding for the main container
+        gameContainer.style.paddingRight = '5px'; // Reduce side padding for the main container
         scoreAndDeckRow.style.gap = '5px'; // Smaller gap for mobile
         
         // Make score cards smaller on mobile
@@ -1664,6 +1666,8 @@
         // Desktop layout adjustments
         gameColumnsContainer.style.width = '';
         gameColumnsContainer.style.gap = '10px'; // Reset gap for desktop
+        gameContainer.style.paddingLeft = ''; // Reset side padding
+        gameContainer.style.paddingRight = ''; // Reset side padding
         scoreAndDeckRow.style.gap = '';
         
         // Reset score card width for desktop
