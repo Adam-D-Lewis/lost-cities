@@ -816,13 +816,8 @@
           const playerCardIndex = playerExpEl.childNodes.length; // Index before appending
           const verticalOffsetPlayer = playerCardIndex * 28; // Increased step for less overlap
           
-          let horizontalOffsetPlayer = '0px'; // Default to left
-          switch (playerCardIndex % 4) {
-            case 0: horizontalOffsetPlayer = '0px'; break;   // Left
-            case 1: horizontalOffsetPlayer = '54px'; break;  // Center (160 - 52)/2
-            case 2: horizontalOffsetPlayer = '108px'; break; // Right (160 - 52)
-            case 3: horizontalOffsetPlayer = '54px'; break;  // Center
-          }
+          // Always start from left (0px) and increment by a small amount for each card
+          let horizontalOffsetPlayer = playerCardIndex * 10 + 'px'; // Small horizontal offset for staggered effect
           
           cardEl.style.left = horizontalOffsetPlayer;
           cardEl.style.bottom = verticalOffsetPlayer + 'px';
@@ -857,13 +852,8 @@
           const opponentCardIndex = opponentExpEl.childNodes.length; // Index before appending
           const verticalOffsetOpponent = opponentCardIndex * 28; // Increased step for less overlap
           
-          let horizontalOffsetOpponent = '0px'; // Default to left
-          switch (opponentCardIndex % 4) {
-            case 0: horizontalOffsetOpponent = '0px'; break;   // Left
-            case 1: horizontalOffsetOpponent = '54px'; break;  // Center (160 - 52)/2
-            case 2: horizontalOffsetOpponent = '108px'; break; // Right (160 - 52)
-            case 3: horizontalOffsetOpponent = '54px'; break;  // Center
-          }
+          // Always start from left (0px) and increment by a small amount for each card
+          let horizontalOffsetOpponent = opponentCardIndex * 10 + 'px'; // Small horizontal offset for staggered effect
           
           cardEl.style.left = horizontalOffsetOpponent;
           cardEl.style.top = verticalOffsetOpponent + 'px';
