@@ -147,7 +147,7 @@
     }
     .expedition-cards {
       position: relative; /* For absolute positioning of cards */
-      width: 130px; /* (160px column min-width - 2*15px padding) */
+      width: 160px; /* Fill content area of .color-column (160px min-width) */
       height: 350px; /* Max height: 1st card (75px) + 11 more cards (11 * 25px = 275px) = 350px */
       /* display: flex, flex-direction, justify-content removed */
     }
@@ -765,14 +765,14 @@
 
           cardEl.style.position = 'absolute';
           const playerCardIndex = playerExpEl.childNodes.length; // Index before appending
-          const verticalOffsetPlayer = playerCardIndex * 20; // 20px step up
+          const verticalOffsetPlayer = playerCardIndex * 28; // Increased step up to 28px
           
           let horizontalOffsetPlayer = '0px'; // Default to left
           switch (playerCardIndex % 4) {
-            case 0: horizontalOffsetPlayer = '0px'; break;  // Left
-            case 1: horizontalOffsetPlayer = '30px'; break; // Center (130 - 70)/2
-            case 2: horizontalOffsetPlayer = '60px'; break; // Right (130 - 70)
-            case 3: horizontalOffsetPlayer = '30px'; break; // Center
+            case 0: horizontalOffsetPlayer = '0px'; break;   // Left
+            case 1: horizontalOffsetPlayer = '45px'; break;  // Center (160 - 70)/2
+            case 2: horizontalOffsetPlayer = '90px'; break;  // Right (160 - 70)
+            case 3: horizontalOffsetPlayer = '45px'; break;  // Center
           }
           
           cardEl.style.left = horizontalOffsetPlayer;
@@ -806,14 +806,14 @@
 
           cardEl.style.position = 'absolute';
           const opponentCardIndex = opponentExpEl.childNodes.length; // Index before appending
-          const verticalOffsetOpponent = opponentCardIndex * 20; // 20px step down
+          const verticalOffsetOpponent = opponentCardIndex * 28; // Increased step down to 28px
           
           let horizontalOffsetOpponent = '0px'; // Default to left
           switch (opponentCardIndex % 4) {
-            case 0: horizontalOffsetOpponent = '0px'; break;  // Left
-            case 1: horizontalOffsetOpponent = '30px'; break; // Center
-            case 2: horizontalOffsetOpponent = '60px'; break; // Right
-            case 3: horizontalOffsetOpponent = '30px'; break; // Center
+            case 0: horizontalOffsetOpponent = '0px'; break;   // Left
+            case 1: horizontalOffsetOpponent = '45px'; break;  // Center
+            case 2: horizontalOffsetOpponent = '90px'; break;  // Right
+            case 3: horizontalOffsetOpponent = '45px'; break;  // Center
           }
           
           cardEl.style.left = horizontalOffsetOpponent;
