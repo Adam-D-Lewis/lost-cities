@@ -180,6 +180,34 @@
       border-radius: 12px; /* Same as .hand */
       margin-top: 15px; /* Add spacing above the button row */
     }
+    .btn-card-container {
+      /* Overrides for .btn to make it a card container */
+      padding: 0 !important;
+      width: 40px; /* Match card width */
+      height: 45px; /* Match card height */
+      border-radius: 6px !important; /* Match card border-radius */
+      text-transform: none !important;
+      letter-spacing: normal !important;
+      background-color: transparent !important; /* Card inside provides visual */
+      /* Flex properties for centering the card content */
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      overflow: hidden;
+      /* Inherits box-shadow, margin, transitions from .btn */
+    }
+    .btn-card-container .card {
+      /* Styles for card visuals inside these buttons */
+      cursor: default !important; /* Button handles click */
+      transform: none !important; /* No hover transform */
+      box-shadow: none !important; /* Button provides shadow */
+      margin: 0 !important;
+      border: none !important; /* Button border or shadow is enough */
+      width: 100%;
+      height: 100%;
+      position: relative; /* Ensure z-index works if needed */
+      z-index: 1; /* Above button's (transparent) background */
+    }
     .btn {
       padding: 8px 15px; /* Reduced padding for mobile */
       background-color: #5D9CEC; /* New accent blue */
@@ -1089,14 +1117,47 @@
 
       if (isPlayerTurn && isDrawCardPhase) {
         drawDeckBtn.style.display = 'inline-block';
+        drawDeckBtn.innerHTML = ''; // Clear existing text
+        drawDeckBtn.classList.add('btn-card-container');
+
+        const deckCardVisual = document.createElement('div');
+        deckCardVisual.className = 'card back'; // Style as card back
+        const valueCenterElDeck = document.createElement('div');
+        valueCenterElDeck.className = 'card-value';
+        valueCenterElDeck.textContent = 'LC'; // Deck back content
+        deckCardVisual.appendChild(valueCenterElDeck);
+        drawDeckBtn.appendChild(deckCardVisual);
 
         const colors = ['red', 'green', 'blue', 'white', 'yellow'];
         colors.forEach(color => {
           if (gameState.discardPiles[color] && gameState.discardPiles[color].length > 0) {
-            // Server will validate if this specific card can be drawn (e.g. not just discarded by player)
+            const topCard = gameState.discardPiles[color][gameState.discardPiles[color].length - 1];
             const btn = document.createElement('button');
-            btn.className = 'btn'; // Assumes .btn class has appropriate display like inline-block
-            btn.textContent = `Draw from ${capitalizeFirstLetter(color)} Discard`;
+            btn.className = 'btn btn-card-container'; // Apply base and card container styles
+            btn.innerHTML = ''; // Clear any default content
+
+            const discardCardVisual = document.createElement('div');
+            discardCardVisual.className = 'card';
+            discardCardVisual.classList.add('theme-' + topCard.color);
+            discardCardVisual.style.backgroundColor = getColorCode(topCard.color);
+
+            if (topCard.color === 'white' || topCard.color === 'yellow') {
+              discardCardVisual.classList.add(topCard.color); // For specific CSS text color rules
+              discardCardVisual.style.color = '#333';
+            } else {
+              discardCardVisual.style.color = '#fff';
+            }
+
+            const cardContent = topCard.value === 0 ? '💰' : topCard.value;
+            const valueCenterElDiscard = document.createElement('div');
+            valueCenterElDiscard.className = 'card-value';
+            valueCenterElDiscard.textContent = cardContent;
+            if (topCard.value === 6 || topCard.value === 9) {
+              valueCenterElDiscard.style.textDecoration = 'underline';
+            }
+            discardCardVisual.appendChild(valueCenterElDiscard);
+            btn.appendChild(discardCardVisual);
+
             btn.addEventListener('click', () => drawFromDiscard(color));
             drawDiscardButtonsContainerEl.appendChild(btn);
           }
