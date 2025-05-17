@@ -552,7 +552,6 @@
       <div id="draw-discard-buttons-container"></div>
     </div>
 
-    <div class="server-info" id="server-info"></div>
   </div>
 
   <div id="notification" class="notification"></div>
@@ -624,7 +623,6 @@
     const playerNameInDeckAreaEl = document.getElementById('player-name-in-deck-area');
     const playerScoreValueInDeckAreaEl = document.getElementById('player-score-value-in-deck-area');
     const toggleLogBtnEl = document.getElementById('toggle-log-btn');
-    const serverInfoEl = document.getElementById('server-info');
 
     // Show notification
     function showNotification(message) {
@@ -1209,7 +1207,6 @@
     function setupSocketEvents() {
       socket.on('connect', () => {
         console.log('Connected to server');
-        serverInfoEl.textContent = `Connected to server: ${serverAddressInput.value}`;
         // No automatic reconnection attempt on connect anymore
       });
       
@@ -1343,7 +1340,6 @@
       socket.on('disconnect', () => {
         console.log('Disconnected from server');
         showNotification('Disconnected from server. Please start or join a new game.');
-        serverInfoEl.textContent = 'Disconnected from server.';
         // Transition to a state where the user must start/join a new game
         setupScreen.style.display = 'block';
         gameContainer.style.display = 'none';
