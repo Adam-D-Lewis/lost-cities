@@ -842,9 +842,9 @@
           discardEl.style.backgroundColor = '#E9E9E9'; // Light grey background for empty pile
           // The discardEl (card placeholder) color will be inherited or from .card class.
           // The crucial part is the color of the text node itself.
-          // For empty state, just a single central placeholder is fine.
-          // Explicitly set color for the inner div to ensure it's not overridden by column theme, using !important.
-          discardEl.innerHTML = '<div class="card-value" style="color: #333 !important;">-</div>'; 
+          // For empty state, display "Discard" text.
+          // Explicitly set color and font size for the inner div to ensure it's not overridden by column theme and fits well.
+          discardEl.innerHTML = '<div class="card-value" style="color: #888 !important; font-size: 0.9em; line-height: normal;">Discard</div>'; 
           discardEl.style.boxShadow = 'inset 0px 1px 4px rgba(0, 0, 0, 0.2)'; // Subtle inset shadow
           discardEl.style.border = '1px dashed #777'; // Dashed border for empty state
         }
