@@ -514,6 +514,10 @@
       border-radius: 5px;
       margin-bottom: 10px; /* Reduced margin */
       font-size: 12px; /* Reduced font size */
+      display: none; /* Hidden by default */
+    }
+    .history-log.is-visible {
+      display: block; /* Show when .is-visible class is present */
     }
     .history-log p {
       margin: 3px 0; /* Reduced margin */
@@ -556,7 +560,7 @@
     <div id="game-status" class="game-status">Waiting for opponent...</div>
     
 
-    <div class="history-log" id="history-log" style="display: none;">
+    <div class="history-log" id="history-log">
       <p>Game started. Waiting for players...</p>
     </div>
     
@@ -1571,11 +1575,7 @@
     // Toggle Log button click handler
     if (toggleLogBtnEl) {
       toggleLogBtnEl.addEventListener('click', () => {
-        if (historyLogEl.style.display === 'none') {
-          historyLogEl.style.display = 'block';
-        } else {
-          historyLogEl.style.display = 'none';
-        }
+        historyLogEl.classList.toggle('is-visible');
       });
     }
 
