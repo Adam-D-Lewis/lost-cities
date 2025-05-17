@@ -1079,17 +1079,16 @@
       }
       
       const card = gameState.hand[gameState.selectedCard];
-      let targetColor = card.color;
+      // Target color for discarding is ALWAYS the card's own color.
+      const targetColor = card.color; 
       
-      // If a specific discard pile was selected, use that instead
-      if (gameState.selectedTarget && gameState.selectedTarget.startsWith('discard')) {
-        targetColor = gameState.selectedTarget.split('-')[1];
-      }
+      // The gameState.selectedTarget (if it's a discard pile) is now only for UI feedback
+      // or for the "Draw from Discard" action. It no longer dictates the discard color for this action.
       
       // Send discard card action to server
       socket.emit('discardCard', {
         cardIndex: gameState.selectedCard,
-        color: targetColor
+        color: targetColor // This will ensure the card is discarded to its own color pile
       });
       
       // Reset selection
