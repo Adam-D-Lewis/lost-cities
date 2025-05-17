@@ -820,8 +820,18 @@
           const playerCardIndex = playerExpEl.childNodes.length; // Index before appending
           const verticalOffsetPlayer = playerCardIndex * 28; // Increased step for less overlap
           
-          // Always start from left (0px) and increment by a small amount for each card
-          let horizontalOffsetPlayer = playerCardIndex * 10 + 'px'; // Small horizontal offset for staggered effect
+          // Determine horizontal offset based on card index for left-middle-right-middle pattern
+          let horizontalOffsetPlayer;
+          const playerPosIndex = playerCardIndex % 4;
+          if (playerPosIndex === 0) { // 1st, 5th, etc. card: Left
+            horizontalOffsetPlayer = '0px';
+          } else if (playerPosIndex === 1) { // 2nd, 6th, etc. card: Middle
+            horizontalOffsetPlayer = '10px';
+          } else if (playerPosIndex === 2) { // 3rd, 7th, etc. card: Right
+            horizontalOffsetPlayer = '20px';
+          } else { // playerPosIndex === 3, 4th, 8th, etc. card: Middle
+            horizontalOffsetPlayer = '10px';
+          }
           
           cardEl.style.left = horizontalOffsetPlayer;
           cardEl.style.bottom = verticalOffsetPlayer + 'px';
@@ -856,8 +866,18 @@
           const opponentCardIndex = opponentExpEl.childNodes.length; // Index before appending
           const verticalOffsetOpponent = opponentCardIndex * 28; // Increased step for less overlap
           
-          // Always start from left (0px) and increment by a small amount for each card
-          let horizontalOffsetOpponent = opponentCardIndex * 10 + 'px'; // Small horizontal offset for staggered effect
+          // Determine horizontal offset based on card index for left-middle-right-middle pattern
+          let horizontalOffsetOpponent;
+          const opponentPosIndex = opponentCardIndex % 4;
+          if (opponentPosIndex === 0) { // 1st, 5th, etc. card: Left
+            horizontalOffsetOpponent = '0px';
+          } else if (opponentPosIndex === 1) { // 2nd, 6th, etc. card: Middle
+            horizontalOffsetOpponent = '10px';
+          } else if (opponentPosIndex === 2) { // 3rd, 7th, etc. card: Right
+            horizontalOffsetOpponent = '20px';
+          } else { // opponentPosIndex === 3, 4th, 8th, etc. card: Middle
+            horizontalOffsetOpponent = '10px';
+          }
           
           cardEl.style.left = horizontalOffsetOpponent;
           cardEl.style.top = verticalOffsetOpponent + 'px';
