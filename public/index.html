@@ -617,6 +617,7 @@
       selectedCard: null,
       selectedTarget: null,
       gamePhase: 'waiting', // waiting, selectCard, selectTarget, drawCard, gameOver
+      isFullyStarted: false, // Flag to indicate if gameStarted event has been received
       hand: [],
       playerExpeditions: {
         red: [],
@@ -1114,8 +1115,8 @@
       
       drawDiscardButtonsContainerEl.innerHTML = ''; // Clear dynamic buttons
 
-      // If game is waiting for players, or over, no action buttons should be visible
-      if (gameState.gamePhase === 'waiting' || gameState.gamePhase === 'gameOver') {
+      // If game is waiting for players, or over, or not fully started, no action buttons should be visible
+      if (gameState.gamePhase === 'waiting' || gameState.gamePhase === 'gameOver' || !gameState.isFullyStarted) {
         return; // Exit early, all buttons remain hidden
       }
 
@@ -1385,6 +1386,7 @@
         // data.currentTurn is persistentPlayerId
         gameState.currentTurn = data.currentTurn;
         gameState.gamePhase = 'selectCard';
+        gameState.isFullyStarted = true; // Mark that the game has officially started
         addToHistory('Game started!');
         renderGameState();
       });
@@ -1509,6 +1511,7 @@
         });
         gameState.playerName = playerNameInput.value.trim() || localStorage.getItem('lostCitiesPlayerName') || (isCreatingGame ? 'Player 1' : 'Player 2');
         localStorage.setItem('lostCitiesPlayerName', gameState.playerName); // Store/update name
+        gameState.isFullyStarted = false; // Reset for new game attempt
 
         setupSocketEvents(); // Setup handlers for the new socket instance
         
