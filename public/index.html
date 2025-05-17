@@ -89,6 +89,7 @@
       justify-content: center;
       gap: 8px; 
       /* margin-top: 15px; /* Removed, new parent #player-action-row will handle spacing */
+      min-height: 45px; /* Ensure row has height even if hand is empty (card height) */
     }
     .card {
       width: 40px; /* Reduced size for mobile */
@@ -164,9 +165,17 @@
       justify-content: center;
       flex-wrap: wrap; /* Allow buttons to wrap on small screens */
       gap: 8px; /* Reduced gap for mobile */
-      margin-top: 15px; /* Reduced margin for mobile */
-      margin-bottom: 15px;
+      /* margin-top and margin-bottom removed, new parent row handles spacing */
       width: 100%; /* Ensure full width */
+    }
+    .action-buttons-row {
+      min-height: 60px; /* Min height for the button row */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 10px 0; /* Vertical padding for the row */
+      box-sizing: border-box;
     }
     .btn {
       padding: 8px 15px; /* Reduced padding for mobile */
@@ -549,11 +558,13 @@
       </div>
     </div>
     
-    <div class="controls">
-      <button id="play-card" class="btn">Play Card</button>
-      <button id="discard-card" class="btn">Discard Card</button>
-      <button id="draw-deck" class="btn">Draw from Deck</button>
-      <div id="draw-discard-buttons-container"></div>
+    <div id="action-buttons-area" class="action-buttons-row">
+      <div class="controls">
+        <button id="play-card" class="btn">Play Card</button>
+        <button id="discard-card" class="btn">Discard Card</button>
+        <button id="draw-deck" class="btn">Draw from Deck</button>
+        <div id="draw-discard-buttons-container"></div>
+      </div>
     </div>
 
   </div>
