@@ -366,13 +366,13 @@
       width: 100%; /* Ensure it takes full width of its column part */
       box-sizing: border-box; /* If padding is added by .score-card, ensure width is inclusive */
     }
-    #player-info-in-deck-area h3 {
+    .score-card h3 { /* Generalize for all score cards */
       margin: 0 0 5px 0;
-      font-size: 1.1em; /* Match score-card h3 */
+      font-size: 1.1em;
     }
-    #player-info-in-deck-area p {
+    .score-card p { /* Generalize for all score cards */
       margin: 0;
-      font-size: 1em; /* Match score-card p */
+      font-size: 1em;
     }
     #player-action-row {
       display: flex;
@@ -511,7 +511,7 @@
         </div>
         <div id="player-info-in-deck-area" class="score-card">
           <h3 id="player-name-in-deck-area">You</h3>
-          <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
+          <p>Total Score: <span id="player-score-value-in-deck-area">0</span></p>
         </div>
       </div>
     </div>
