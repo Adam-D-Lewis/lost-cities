@@ -385,19 +385,25 @@
       flex-grow: 1; /* Make the hand container take available space */
     }
     #toggle-log-btn {
-      /* Specific margins removed, padding and font-size will be handled by .btn-utility */
+      /* Specific margins removed, dimensions and padding handled by .btn-utility */
     }
     .btn-utility { /* New class for the LOG button */
-      padding: 6px 12px; /* Smaller padding */
-      font-size: 12px; /* Smaller font */
+      width: 52px; /* Card width */
+      height: 56px; /* Card height */
+      padding: 0; /* Remove padding to use full dimensions for text centering */
+      font-size: 14px; /* Adjusted for better fit, can be tweaked */
       background-color: #7f8c8d; /* A more neutral, less prominent color (e.g., grey) */
       color: white;
       border: none;
-      border-radius: 20px; /* Slightly less rounded than main buttons if desired, or keep same */
+      border-radius: 8px; /* More squarish, similar to cards */
       text-transform: none; /* Normal casing, not uppercase */
-      font-weight: normal; /* Normal font weight */
+      font-weight: bold; /* Make text bold like card values */
       letter-spacing: normal; /* Normal letter spacing */
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: flex; /* For centering text */
+      align-items: center; /* For centering text */
+      justify-content: center; /* For centering text */
+      line-height: 1; /* Ensure text is vertically centered if it wraps (though it shouldn't) */
     }
     .btn-utility:hover {
       background-color: #95a5a6; /* Lighter grey on hover */
