@@ -843,7 +843,7 @@
           let horizontalOffsetPlayer;
           const playerPosIndex = playerCardIndex % 4;
           if (playerPosIndex === 0) { // 1st, 5th, etc. card: Left
-            horizontalOffsetPlayer = '0px';
+            horizontalOffsetPlayer = '-8px'; // Shifted left to reduce gap from column edge
           } else if (playerPosIndex === 1) { // 2nd, 6th, etc. card: Middle
             horizontalOffsetPlayer = Math.round(playerColumnWidth / 3) + 'px';
           } else if (playerPosIndex === 2) { // 3rd, 7th, etc. card: Right
@@ -907,7 +907,7 @@
           let horizontalOffsetOpponent;
           const opponentPosIndex = opponentCardIndex % 4;
           if (opponentPosIndex === 0) { // 1st, 5th, etc. card: Left
-            horizontalOffsetOpponent = '0px';
+            horizontalOffsetOpponent = '-8px'; // Shifted left to reduce gap from column edge
           } else if (opponentPosIndex === 1) { // 2nd, 6th, etc. card: Middle
             horizontalOffsetOpponent = Math.round(opponentColumnWidth / 3) + 'px';
           } else if (opponentPosIndex === 2) { // 3rd, 7th, etc. card: Right
