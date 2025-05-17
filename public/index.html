@@ -597,7 +597,6 @@
       <div class="controls">
         <button id="play-card" class="btn">PLAY</button>
         <button id="discard-card" class="btn">DISCARD</button>
-        <button id="draw-deck" class="btn">Draw from Deck</button>
         <div id="draw-discard-buttons-container"></div>
       </div>
     </div>
@@ -664,7 +663,7 @@
     const deckCountEl = document.getElementById('deck-count');
     const playCardBtn = document.getElementById('play-card');
     const discardCardBtn = document.getElementById('discard-card');
-    const drawDeckBtn = document.getElementById('draw-deck');
+    // const drawDeckBtn = document.getElementById('draw-deck'); // Removed, will be created dynamically
     const drawDiscardButtonsContainerEl = document.getElementById('draw-discard-buttons-container');
     // opponentScoreEl and opponentNameEl are still valid as their IDs are in the moved score card
     const opponentScoreEl = document.getElementById('opponent-score-value'); 
@@ -1109,11 +1108,11 @@
       // Hide all buttons initially
       playCardBtn.style.display = 'none';
       discardCardBtn.style.display = 'none';
-      
-      drawDeckBtn.style.display = 'none';
-      drawDeckBtn.classList.remove('btn-card-container'); // Ensure class forcing display is removed
-      
-      drawDiscardButtonsContainerEl.innerHTML = ''; // Clear dynamic buttons
+          
+      // drawDeckBtn.style.display = 'none'; // Removed, drawDeckBtn is no longer a global static element
+      // drawDeckBtn.classList.remove('btn-card-container'); // Removed
+          
+      drawDiscardButtonsContainerEl.innerHTML = ''; // Clear dynamic buttons (this will now clear the deck draw button too)
 
       // If game is waiting for players, or over, or not fully started, no action buttons should be visible
       if (gameState.gamePhase === 'waiting' || gameState.gamePhase === 'gameOver' || !gameState.isFullyStarted) {
@@ -1575,8 +1574,8 @@
     // Discard card button click handler
     discardCardBtn.addEventListener('click', discardCard);
     
-    // Draw deck button click handler
-    drawDeckBtn.addEventListener('click', drawFromDeck);
+    // Draw deck button click handler (Removed, will be added to dynamically created button)
+    // drawDeckBtn.addEventListener('click', drawFromDeck); 
     
     // Draw discard button click handler (old generic button's listener is removed as button is removed)
 
