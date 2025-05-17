@@ -87,8 +87,8 @@
       margin-top: 15px; /* Added margin for spacing */
     }
     .card {
-      width: 60px; 
-      height: 90px; 
+      width: 70px; 
+      height: 75px; 
       background-color: white; 
       border-radius: 8px; 
       display: flex;
@@ -149,7 +149,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start; /* Ensure cards stack from the top */
-      height: 355px; /* Max height: 1st card (80px) + 11 more cards (11 * 25px = 275px) = 355px */
+      height: 350px; /* Max height: 1st card (75px) + 11 more cards (11 * 25px = 275px) = 350px */
       /* gap: 2px; /* Removed gap for overlapping */
     }
     /* .discard-piles (container) styles removed */
@@ -229,8 +229,8 @@
     }
     .deck {
       position: relative; /* No longer absolute */
-      width: 60px; 
-      height: 85px; 
+      width: 70px; 
+      height: 75px; 
       text-align: center;
     }
     .deck-count {
@@ -800,7 +800,7 @@
           cardEl.appendChild(valueBottomRightEl);
           
           if (playerExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
-            cardEl.style.marginTop = '-55px'; // 80px card height - 25px visible top = 55px overlap
+            cardEl.style.marginTop = '-50px'; // 75px card height - 25px visible top = 50px overlap
           }
           playerExpEl.appendChild(cardEl);
         });
@@ -838,7 +838,7 @@
           cardEl.appendChild(valueBottomRightEl);
 
           if (opponentExpEl.childNodes.length > 0) { // Apply negative margin to subsequent cards
-            cardEl.style.marginTop = '-55px';
+            cardEl.style.marginTop = '-50px'; // 75px card height - 25px visible top = 50px overlap
           }
           opponentExpEl.appendChild(cardEl);
         });
