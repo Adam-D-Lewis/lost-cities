@@ -377,9 +377,12 @@
     #player-action-row {
       display: flex;
       align-items: center; /* Vertically align hand and button */
-      justify-content: center; /* Center the group */
+      justify-content: space-between; /* Allow hand to grow and push button */
       gap: 20px; /* Space between hand and button */
       margin-top: 15px; /* Overall top margin for this row */
+    }
+    .hand { /* Target .hand directly to make it grow */
+      flex-grow: 1; /* Make the hand container take available space */
     }
     #toggle-log-btn {
       /* margin-top: auto; Removed */
