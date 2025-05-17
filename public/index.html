@@ -350,6 +350,7 @@
       padding: 10px;
       min-width: 160px; /* Match color-column width for balance */
       height: 100%; 
+      min-height: 600px; /* Ensure it extends down as far as expedition columns */
       box-sizing: border-box; /* Include padding in height calculation */
     }
     .deck-area-spacer {
@@ -370,8 +371,8 @@
     }
     #player-info-in-deck-area { /* Now also a .score-card */
       /* text-align, font-weight, font-size, color are handled by .score-card or internal h3/p */
-      margin-top: 0; /* No space above */
-      margin-bottom: 15px; /* Space above player hand */
+      margin-top: auto; /* Push to bottom of container */
+      margin-bottom: 0; /* No space below */
       width: 100%; /* Ensure it takes full width */
       box-sizing: border-box; /* If padding is added by .score-card, ensure width is inclusive */
     }
