@@ -827,6 +827,8 @@
 
     function renderExpeditions() {
       const colors = ['red', 'green', 'blue', 'white', 'yellow'];
+      const isMobile = window.innerWidth < 768;
+      const verticalMobileScaleFactor = isMobile ? 0.7 : 1.0;
       
       colors.forEach(color => {
         const playerExpEl = document.getElementById(`player-${color}-expedition`);
@@ -879,7 +881,8 @@
           const playerCardIndex = playerExpEl.childNodes.length; // Index before appending
           // Adjust vertical step proportionally to new card height
           const verticalStepFactor = originalVerticalStep / defaultCardHeight;
-          const verticalOffsetPlayer = playerCardIndex * (targetHeight * verticalStepFactor);
+          let verticalOffsetPlayer = playerCardIndex * (targetHeight * verticalStepFactor);
+          verticalOffsetPlayer *= verticalMobileScaleFactor; // Apply mobile-specific vertical scaling
           
           // Determine horizontal offset based on card index for left-middle-right-middle pattern
           let horizontalOffsetPlayer;
@@ -945,7 +948,8 @@
           const opponentCardIndex = opponentExpEl.childNodes.length; // Index before appending
           // Adjust vertical step proportionally to new card height
           const verticalStepFactor = originalVerticalStep / defaultCardHeight;
-          const verticalOffsetOpponent = opponentCardIndex * (targetHeight * verticalStepFactor);
+          let verticalOffsetOpponent = opponentCardIndex * (targetHeight * verticalStepFactor);
+          verticalOffsetOpponent *= verticalMobileScaleFactor; // Apply mobile-specific vertical scaling
           
           // Determine horizontal offset based on card index for left-middle-right-middle pattern
           let horizontalOffsetOpponent;
@@ -1621,15 +1625,7 @@
         
         // Adjust card positioning for smaller screens
         document.querySelectorAll('.expedition-cards .card').forEach(card => {
-          const currentBottom = parseInt(card.style.bottom || '0');
-          const currentTop = parseInt(card.style.top || '0');
-          
-          if (card.style.bottom) {
-            card.style.bottom = (currentBottom * 0.7) + 'px'; // Scale down vertical spacing
-          }
-          if (card.style.top) {
-            card.style.top = (currentTop * 0.7) + 'px'; // Scale down vertical spacing
-          }
+          // Vertical scaling is now handled directly in renderExpeditions
           
           // Adjust horizontal positioning
           if (card.style.left) {
