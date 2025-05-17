@@ -37,11 +37,6 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.07);
       font-weight: 600;
     }
-    .scores {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 10px; /* Reduced margin */
-    }
     .score-card {
       background-color: white;
       padding: 12px 20px; 
@@ -348,19 +343,38 @@
 .deck-area {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: space-around; /* Space out deck, score, button */
+      align-items: center; /* Center items horizontally */
+      justify-content: space-between; /* Pushes content to top/bottom */
       padding: 10px;
-      min-width: 120px; /* Increased min-width to accommodate button text */
-      height: 100%; /* Try to fill vertical space if parent allows */
+      min-width: 160px; /* Match color-column width for balance */
+      height: 100%; 
+      box-sizing: border-box; /* Include padding in height calculation */
     }
-    #player-total-score-in-deck-area {
+    .deck-area .score-card { /* Style for opponent's score card in deck area */
+      width: 100%;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    .deck-area .deck {
+      margin-top: 10px; /* Space below opponent score */
+      margin-bottom: 10px; /* Space above player score */
+    }
+    #player-info-in-deck-area {
       text-align: center;
       font-weight: bold;
       font-size: 1.1em;
-      margin-top: 15px;
-      margin-bottom: 10px;
       color: #333;
+      margin-top: 10px; /* Space below deck */
+      margin-bottom: 15px; /* Space above toggle button */
+      width: 100%;
+    }
+    #player-info-in-deck-area h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.1em; /* Match score-card h3 */
+    }
+    #player-info-in-deck-area p {
+      margin: 0;
+      font-size: 1em; /* Match score-card p */
     }
     #toggle-log-btn {
       margin-top: auto; /* Pushes button towards the bottom if deck-area has extra space */
@@ -447,12 +461,6 @@
     <h1>Lost Cities</h1>
     <div id="game-status" class="game-status">Waiting for opponent...</div>
     
-    <div class="scores">
-      <div id="opponent-score" class="score-card">
-        <h3 id="opponent-name">Opponent: 0</h3>
-        <p>Total Score: <span id="opponent-score-value">0</span></p>
-      </div>
-    </div>
 
     <div class="history-log" id="history-log">
       <p>Game started. Waiting for players...</p>
@@ -463,14 +471,19 @@
         <!-- Color columns will be dynamically generated here by JavaScript -->
       </div>
       <div class="deck-area">
+        <div id="opponent-score" class="score-card">
+          <h3 id="opponent-name">Opponent: 0</h3>
+          <p>Total Score: <span id="opponent-score-value">0</span></p>
+        </div>
         <div class="deck" id="deck">
           <div class="card back">
             <div class="card-value">LC</div>
           </div>
           <div class="deck-count" id="deck-count">60</div>
         </div>
-        <div id="player-total-score-in-deck-area">
-          Your Score: <span id="player-score-value-in-deck-area">0</span>
+        <div id="player-info-in-deck-area">
+          <h3 id="player-name-in-deck-area">You</h3>
+          <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
         </div>
         <button id="toggle-log-btn" class="btn">Toggle Log</button>
       </div>
@@ -552,10 +565,12 @@
     const discardCardBtn = document.getElementById('discard-card');
     const drawDeckBtn = document.getElementById('draw-deck');
     const drawDiscardButtonsContainerEl = document.getElementById('draw-discard-buttons-container');
-    const opponentScoreEl = document.getElementById('opponent-score-value');
+    // opponentScoreEl and opponentNameEl are still valid as their IDs are in the moved score card
+    const opponentScoreEl = document.getElementById('opponent-score-value'); 
     const opponentNameEl = document.getElementById('opponent-name');
     const notificationEl = document.getElementById('notification');
     const historyLogEl = document.getElementById('history-log');
+    const playerNameInDeckAreaEl = document.getElementById('player-name-in-deck-area');
     const playerScoreValueInDeckAreaEl = document.getElementById('player-score-value-in-deck-area');
     const toggleLogBtnEl = document.getElementById('toggle-log-btn');
     const serverInfoEl = document.getElementById('server-info');
@@ -874,11 +889,12 @@
     }
 
     function updateScores() {
+      if (playerNameInDeckAreaEl) playerNameInDeckAreaEl.textContent = gameState.playerName || 'You';
       if (playerScoreValueInDeckAreaEl) playerScoreValueInDeckAreaEl.textContent = gameState.playerScore;
-      opponentScoreEl.textContent = gameState.opponentScore;
       
-      // playerNameEl is removed as its container was removed. Player's name is in gameState.playerName if needed elsewhere.
-      opponentNameEl.textContent = `${gameState.opponentName}`; // Name only
+      // opponentNameEl and opponentScoreEl are still valid for the moved card
+      if (opponentNameEl) opponentNameEl.textContent = `${gameState.opponentName || 'Opponent'}`;
+      if (opponentScoreEl) opponentScoreEl.textContent = gameState.opponentScore;
 
       const colors = ['red', 'green', 'blue', 'white', 'yellow'];
 
