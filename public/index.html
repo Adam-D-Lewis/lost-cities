@@ -148,7 +148,7 @@
     .expedition-cards {
       position: relative; /* For absolute positioning of cards */
       width: 160px; /* Fill content area of .color-column (160px min-width) */
-      height: 287px; /* Max height: 1st card (56px) + 11 more cards (11 * 21px = 231px) = 287px */
+      height: 364px; /* Max height: 1st card (56px) + 11 more cards (11 * 28px = 308px) = 364px */
       /* display: flex, flex-direction, justify-content removed */
     }
     /* .discard-piles (container) styles removed */
@@ -765,7 +765,7 @@
 
           cardEl.style.position = 'absolute';
           const playerCardIndex = playerExpEl.childNodes.length; // Index before appending
-          const verticalOffsetPlayer = playerCardIndex * 21; // Adjusted step for smaller cards
+          const verticalOffsetPlayer = playerCardIndex * 28; // Increased step for less overlap
           
           let horizontalOffsetPlayer = '0px'; // Default to left
           switch (playerCardIndex % 4) {
@@ -806,7 +806,7 @@
 
           cardEl.style.position = 'absolute';
           const opponentCardIndex = opponentExpEl.childNodes.length; // Index before appending
-          const verticalOffsetOpponent = opponentCardIndex * 21; // Adjusted step for smaller cards
+          const verticalOffsetOpponent = opponentCardIndex * 28; // Increased step for less overlap
           
           let horizontalOffsetOpponent = '0px'; // Default to left
           switch (opponentCardIndex % 4) {
