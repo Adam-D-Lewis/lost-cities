@@ -39,7 +39,7 @@
     }
     .score-card {
       background-color: white;
-      padding: 20px 20px; /* Increased top/bottom padding from 12px to 20px */
+      padding: 30px 30px; 
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       min-width: 140px; 
@@ -501,7 +501,7 @@
       <div class="deck-area">
         <div id="opponent-score" class="score-card">
           <h3 id="opponent-name">Opponent: 0</h3>
-          <p>Total Score: <span id="opponent-score-value">0</span></p>
+          <p>Score: <span id="opponent-score-value">0</span></p>
         </div>
         <div class="deck" id="deck">
           <div class="card back">
@@ -511,7 +511,7 @@
         </div>
         <div id="player-info-in-deck-area" class="score-card">
           <h3 id="player-name-in-deck-area">You</h3>
-          <p>Total Score: <span id="player-score-value-in-deck-area">0</span></p>
+          <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
         </div>
       </div>
     </div>
@@ -1460,7 +1460,7 @@
       ];
 
       // Gain values for each partial (fundamental is loudest)
-      const initialGains = [0.15, 0.105, 0.075]; // Increased volume
+      const initialGains = [0.15, 0.105, 0.075]; 
       // Decay times for each partial (overtones decay slightly faster)
       const decayTimes = [1.0, 0.8, 0.6];
 
