@@ -254,9 +254,22 @@
       color: white; /* Text color for dark backgrounds */
     }
     .color-column.theme-white { /* Dwarf themed with Aztec pattern */
-      background: url('assets/aztec-pattern.svg') repeat, linear-gradient(135deg, #D3D3D3, #A9A9A9); /* SVG pattern on top of gradient */
-      background-size: auto, auto; /* Default size for SVG, auto for gradient */
+      position: relative; /* For positioning the pseudo-element */
+      background: linear-gradient(135deg, #D3D3D3, #A9A9A9); /* Gradient only */
+      overflow: hidden; /* To clip the pseudo-element to the border-radius */
       /* Consider adding a subtle texture or pattern here if possible with CSS */
+    }
+    .color-column.theme-white::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('assets/aztec-pattern.svg') repeat;
+      background-size: auto; /* Or specify a size if needed */
+      opacity: 0.5; /* 50% opacity for the pattern */
+      z-index: 0; /* Ensures pattern is above the gradient but below content */
     }
     .color-column.theme-yellow { /* Egyptian themed */
       background: linear-gradient(135deg, #F0E68C, #DAA520); /* Khaki to Goldenrod */
