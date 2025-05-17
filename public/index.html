@@ -385,11 +385,24 @@
       flex-grow: 1; /* Make the hand container take available space */
     }
     #toggle-log-btn {
-      /* margin-top: auto; Removed */
-      /* margin-bottom: 10px; Removed */
-      padding: 8px 15px; /* Slightly smaller button */
-      font-size: 13px;
-      /* align-self: center; /* Ensures button is centered if hand is taller, handled by align-items on parent */
+      /* Specific margins removed, padding and font-size will be handled by .btn-utility */
+    }
+    .btn-utility { /* New class for the LOG button */
+      padding: 6px 12px; /* Smaller padding */
+      font-size: 12px; /* Smaller font */
+      background-color: #7f8c8d; /* A more neutral, less prominent color (e.g., grey) */
+      color: white;
+      border: none;
+      border-radius: 20px; /* Slightly less rounded than main buttons if desired, or keep same */
+      text-transform: none; /* Normal casing, not uppercase */
+      font-weight: normal; /* Normal font weight */
+      letter-spacing: normal; /* Normal letter spacing */
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .btn-utility:hover {
+      background-color: #95a5a6; /* Lighter grey on hover */
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
     }
     .card-value { /* This will be the main, large, centered number */
       font-size: 2.8em; /* Slightly reduced to prevent clipping */
@@ -501,7 +514,7 @@
       <div class="hand" id="player-hand">
           <!-- Player's hand will be rendered here -->
       </div>
-      <button id="toggle-log-btn" class="btn">Toggle Log</button>
+      <button id="toggle-log-btn" class="btn btn-utility">LOG</button>
     </div>
     
     <div class="controls">
