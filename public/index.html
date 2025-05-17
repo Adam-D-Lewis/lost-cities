@@ -359,7 +359,9 @@
       box-sizing: border-box;
     }
     .score-and-deck-row .score-card {
-      width: 30%;
+      width: auto;
+      min-width: 140px;
+      max-width: 200px;
       margin: 0;
       box-sizing: border-box;
     }
@@ -1467,6 +1469,7 @@
         // Make score cards full width on mobile
         document.querySelectorAll('.score-and-deck-row .score-card').forEach(card => {
           card.style.width = '100%';
+          card.style.maxWidth = 'none';
         });
         
         // Adjust card positioning for smaller screens
@@ -1495,7 +1498,7 @@
         
         // Reset score card width for desktop
         document.querySelectorAll('.score-and-deck-row .score-card').forEach(card => {
-          card.style.width = '30%';
+          card.style.width = 'auto';
         });
       }
     }
