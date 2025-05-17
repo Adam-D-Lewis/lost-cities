@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lost Cities - Local Network Game</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
@@ -17,8 +17,9 @@
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 15px; /* Increased padding for better spacing */
+      padding: 10px; /* Reduced padding for mobile */
       box-sizing: border-box; /* Added for predictable sizing */
+      width: 100%; /* Ensure full width */
     }
     h1 {
       color: #333;
@@ -67,9 +68,10 @@
     .board {
       display: flex; /* To arrange columns and deck area side-by-side */
       justify-content: space-between;
-      gap: 10px; /* Reduced gap */
+      gap: 5px; /* Further reduced gap for mobile */
       margin-bottom: 10px; /* Reduced margin */
       flex-grow: 1; /* Allow board to take available vertical space */
+      flex-wrap: wrap; /* Allow wrapping on small screens */
     }
     .hand {
       background-color: rgba(0, 0, 0, 0.05); /* More subtle background */
@@ -81,10 +83,10 @@
       /* margin-top: 15px; /* Removed, new parent #player-action-row will handle spacing */
     }
     .card {
-      width: 52px; /* 70px * 0.75 */
-      height: 56px; /* 75px * 0.75 */
+      width: 40px; /* Reduced size for mobile */
+      height: 45px; /* Reduced size for mobile */
       background-color: white; 
-      border-radius: 8px; 
+      border-radius: 6px; /* Slightly reduced for mobile */
       display: flex;
       flex-direction: column;
       justify-content: center; 
@@ -92,7 +94,7 @@
       font-weight: 700; /* Bolder */
       /* font-size: 1.2em; Removed, will be controlled by specific value elements */
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.08);
       border: 1px solid #333; /* Added a dark border for better visibility */
       position: relative; /* Ensures corner values are positioned relative to the card */
       transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
@@ -140,31 +142,34 @@
     }
     .expedition-cards {
       position: relative; /* For absolute positioning of cards */
-      width: 160px; /* Fill content area of .color-column (160px min-width) */
-      height: 364px; /* Max height: 1st card (56px) + 11 more cards (11 * 28px = 308px) = 364px */
+      width: 100%; /* Fill parent width */
+      height: 250px; /* Reduced height for mobile */
       /* display: flex, flex-direction, justify-content removed */
     }
     /* .discard-piles (container) styles removed */
     .controls {
       display: flex;
       justify-content: center;
-      gap: 12px; 
-      margin-top: 20px; /* Added margin for spacing */
-      margin-bottom: 20px; 
+      flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+      gap: 8px; /* Reduced gap for mobile */
+      margin-top: 15px; /* Reduced margin for mobile */
+      margin-bottom: 15px;
+      width: 100%; /* Ensure full width */
     }
     .btn {
-      padding: 10px 20px; 
+      padding: 8px 15px; /* Reduced padding for mobile */
       background-color: #5D9CEC; /* New accent blue */
       color: white;
       border: none;
       border-radius: 25px; /* Pill shape */
       cursor: pointer;
-      font-size: 14px; 
+      font-size: 12px; /* Reduced for mobile */
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       transition: all 0.2s ease-in-out;
+      margin: 2px; /* Add small margin between buttons */
     }
     .btn:hover {
       background-color: #4A89DC; /* Darker shade */
@@ -221,8 +226,8 @@
     }
     .deck {
       position: relative; /* No longer absolute */
-      width: 52px; 
-      height: 56px; 
+      width: 40px; /* Reduced for mobile */
+      height: 45px; /* Reduced for mobile */
       text-align: center;
     }
     .deck-count {
@@ -243,12 +248,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px; /* Space between opponent exp, discard, player exp */
-      padding: 15px;
+      gap: 10px; /* Reduced space between elements for mobile */
+      padding: 10px; /* Reduced padding for mobile */
       border-radius: 12px; /* More rounded */
-      min-width: 160px; /* Ensure columns have some base width */
+      min-width: 60px; /* Reduced minimum width for mobile */
+      width: calc(20% - 5px); /* Each column takes 1/5 of space minus gap */
       transition: background 0.5s ease; /* Smooth bg change for gradients */
       color: #333; /* Default text color for columns, ensure readability */
+      box-sizing: border-box; /* Include padding in width calculation */
     }
 
     /* Theme styles for columns */
@@ -348,10 +355,13 @@
       align-items: center; /* Center items horizontally */
       justify-content: space-between; /* Distribute content to fill the column height */
       padding: 10px;
-      min-width: 160px; /* Match color-column width for balance */
+      min-width: 60px; /* Reduced for mobile */
+      width: 100%; /* Full width on mobile */
       height: 100%; 
-      min-height: 600px; /* Ensure it extends down as far as expedition columns */
+      min-height: 200px; /* Reduced for mobile */
       box-sizing: border-box; /* Include padding in height calculation */
+      order: -1; /* Place deck area at the top on mobile */
+      margin-bottom: 10px; /* Add space below deck area */
     }
     .deck-area-spacer {
       flex-grow: 1; /* Allows the spacer to take up available space */
@@ -359,7 +369,7 @@
     }
     /* Position the deck to align with discard piles */
     .deck-area .deck {
-      margin-top: 120px; /* Adjust this value to align with discard piles */
+      margin-top: 0; /* Reset margin for mobile layout */
     }
     .deck-area .score-card { /* Style for opponent's score card in deck area */
       width: 100%;
@@ -388,8 +398,9 @@
       display: flex;
       align-items: center; /* Vertically align hand and button */
       justify-content: space-between; /* Allow hand to grow and push button */
-      gap: 20px; /* Space between hand and button */
+      gap: 10px; /* Reduced space between hand and button */
       margin-top: 15px; /* Overall top margin for this row */
+      width: 100%; /* Ensure full width */
     }
     .hand { /* Target .hand directly to make it grow */
       flex-grow: 1; /* Make the hand container take available space */
@@ -398,14 +409,14 @@
       /* Specific margins removed, dimensions and padding handled by .btn-utility */
     }
     .btn-utility { /* New class for the LOG button */
-      width: 52px; /* Card width */
-      height: 56px; /* Card height */
+      width: 40px; /* Reduced for mobile */
+      height: 45px; /* Reduced for mobile */
       padding: 0; /* Remove padding to use full dimensions for text centering */
-      font-size: 14px; /* Adjusted for better fit, can be tweaked */
+      font-size: 12px; /* Reduced for mobile */
       background-color: #7f8c8d; /* A more neutral, less prominent color (e.g., grey) */
       color: white;
       border: none;
-      border-radius: 8px; /* More squarish, similar to cards */
+      border-radius: 6px; /* More squarish, similar to cards */
       text-transform: none; /* Normal casing, not uppercase */
       font-weight: bold; /* Make text bold like card values */
       letter-spacing: normal; /* Normal letter spacing */
@@ -421,7 +432,7 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.12);
     }
     .card-value { /* This will be the main, large, centered number */
-      font-size: 2.8em; /* Slightly reduced to prevent clipping */
+      font-size: 1.8em; /* Reduced for mobile */
       font-weight: 700;
       line-height: 1; /* Adjust line height for better centering */
       position: relative; /* Establish stacking context */
@@ -732,6 +743,7 @@
       updateScores();
       updateGameStatus();
       updateControls();
+      adjustLayoutForScreenSize(); // New function to handle responsive layout
     }
 
     function renderHand() {
@@ -1453,6 +1465,45 @@
         localStorage.setItem('lostCitiesServerAddress', serverAddressInput.value.trim());
       });
     });
+
+    // Function to adjust layout based on screen size
+    function adjustLayoutForScreenSize() {
+      const isMobile = window.innerWidth < 768;
+      const gameColumnsContainer = document.getElementById('game-columns-container');
+      const deckArea = document.querySelector('.deck-area');
+      
+      if (isMobile) {
+        // Mobile layout adjustments
+        gameColumnsContainer.style.width = '100%';
+        deckArea.style.width = '100%';
+        
+        // Adjust card positioning for smaller screens
+        document.querySelectorAll('.expedition-cards .card').forEach(card => {
+          const currentBottom = parseInt(card.style.bottom || '0');
+          const currentTop = parseInt(card.style.top || '0');
+          
+          if (card.style.bottom) {
+            card.style.bottom = (currentBottom * 0.7) + 'px'; // Scale down vertical spacing
+          }
+          if (card.style.top) {
+            card.style.top = (currentTop * 0.7) + 'px'; // Scale down vertical spacing
+          }
+          
+          // Adjust horizontal positioning
+          if (card.style.left) {
+            const currentLeft = parseInt(card.style.left);
+            card.style.left = Math.min(currentLeft, 80) + 'px'; // Limit maximum left position
+          }
+        });
+      } else {
+        // Desktop layout adjustments
+        gameColumnsContainer.style.width = '';
+        deckArea.style.width = '';
+      }
+    }
+
+    // Add window resize listener
+    window.addEventListener('resize', adjustLayoutForScreenSize);
 
     // Function to play a turn notification sound
     function playTurnSound() {
