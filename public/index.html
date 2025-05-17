@@ -1132,9 +1132,11 @@
       }
 
       if (isPlayerTurn && isDrawCardPhase) {
-        drawDeckBtn.style.display = 'inline-block';
-        drawDeckBtn.innerHTML = ''; // Clear existing text
-        drawDeckBtn.classList.add('btn-card-container');
+        // Dynamically create and add the "Draw from Deck" button
+        const newDrawDeckBtn = document.createElement('button');
+        newDrawDeckBtn.id = 'draw-deck'; // Assign an ID for consistency or potential future use
+        newDrawDeckBtn.className = 'btn btn-card-container'; // Apply base and card container styles
+        // newDrawDeckBtn.style.display is handled by parent flex container and btn-card-container styles
 
         const deckCardVisual = document.createElement('div');
         deckCardVisual.className = 'card back'; // Style as card back
@@ -1142,7 +1144,10 @@
         valueCenterElDeck.className = 'card-value';
         valueCenterElDeck.textContent = 'LC'; // Deck back content
         deckCardVisual.appendChild(valueCenterElDeck);
-        drawDeckBtn.appendChild(deckCardVisual);
+        newDrawDeckBtn.appendChild(deckCardVisual);
+        
+        newDrawDeckBtn.addEventListener('click', drawFromDeck);
+        drawDiscardButtonsContainerEl.appendChild(newDrawDeckBtn); // Add to the container for draw buttons
 
         const colors = ['red', 'green', 'blue', 'white', 'yellow'];
         colors.forEach(color => {
