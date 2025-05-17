@@ -356,6 +356,10 @@
       flex-grow: 1; /* Allows the spacer to take up available space */
       min-height: 50px; /* Minimum height to ensure some spacing even when content is minimal */
     }
+    /* Position the deck to align with discard piles */
+    .deck-area .deck {
+      margin-top: 120px; /* Adjust this value to align with discard piles */
+    }
     .deck-area .score-card { /* Style for opponent's score card in deck area */
       width: 100%;
       margin-bottom: 10px;
@@ -366,9 +370,9 @@
     }
     #player-info-in-deck-area { /* Now also a .score-card */
       /* text-align, font-weight, font-size, color are handled by .score-card or internal h3/p */
-      margin-top: 10px; /* Space below deck */
-      margin-bottom: 15px; /* Space above toggle button */
-      width: 100%; /* Ensure it takes full width of its column part */
+      margin-top: 0; /* No space above */
+      margin-bottom: 15px; /* Space above player hand */
+      width: 100%; /* Ensure it takes full width */
       box-sizing: border-box; /* If padding is added by .score-card, ensure width is inclusive */
     }
     .score-card h3 { /* Generalize for all score cards */
@@ -516,13 +520,14 @@
           <div class="deck-count" id="deck-count">60</div>
         </div>
         <div class="deck-area-spacer"></div>
-        <div id="player-info-in-deck-area" class="score-card">
-          <h3 id="player-name-in-deck-area">You</h3>
-          <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
-        </div>
       </div>
     </div>
       
+    <div id="player-info-in-deck-area" class="score-card">
+      <h3 id="player-name-in-deck-area">You</h3>
+      <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
+    </div>
+    
     <div id="player-action-row">
       <div class="hand" id="player-hand">
           <!-- Player's hand will be rendered here -->
