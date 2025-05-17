@@ -64,7 +64,7 @@
       padding: 4px 8px;
       border-radius: 4px;
       background-color: rgba(0, 0, 0, 0.3); /* Darker background */
-      color: #000 !important; /* Ensure text is black, overriding column theme */
+      color: #fff !important; /* Ensure text is white, overriding column theme */
       text-align: center;
       min-width: 50px; /* Ensure it has some width */
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -843,7 +843,7 @@
           // discardEl.style.border = ''; // Border is handled by selection logic below
         } else {
           discardEl.style.backgroundColor = '#E9E9E9'; // Light grey background for empty pile
-          discardEl.style.color = '#888 !important'; // Set text color on the card placeholder itself
+          discardEl.style.color = '#000 !important'; // Set text color on the card placeholder itself to black
           discardEl.innerHTML = '<div class="empty-discard-text">Discard</div>'; 
           discardEl.style.boxShadow = 'inset 0px 1px 4px rgba(0, 0, 0, 0.2)'; // Subtle inset shadow
           discardEl.style.border = '1px dashed #777'; // Dashed border for empty state
