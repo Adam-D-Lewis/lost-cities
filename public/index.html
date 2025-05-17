@@ -76,7 +76,7 @@
       display: flex;
       justify-content: center;
       gap: 8px; 
-      margin-top: 15px; /* Added margin for spacing */
+      /* margin-top: 15px; /* Removed, new parent #player-action-row will handle spacing */
     }
     .card {
       width: 52px; /* 70px * 0.75 */
@@ -374,11 +374,19 @@
       margin: 0;
       font-size: 1em; /* Match score-card p */
     }
+    #player-action-row {
+      display: flex;
+      align-items: center; /* Vertically align hand and button */
+      justify-content: center; /* Center the group */
+      gap: 20px; /* Space between hand and button */
+      margin-top: 15px; /* Overall top margin for this row */
+    }
     #toggle-log-btn {
-      margin-top: auto; /* Pushes button towards the bottom if deck-area has extra space */
-      margin-bottom: 10px; /* Space from bottom edge */
+      /* margin-top: auto; Removed */
+      /* margin-bottom: 10px; Removed */
       padding: 8px 15px; /* Slightly smaller button */
       font-size: 13px;
+      /* align-self: center; /* Ensures button is centered if hand is taller, handled by align-items on parent */
     }
     .card-value { /* This will be the main, large, centered number */
       font-size: 2.8em; /* Slightly reduced to prevent clipping */
@@ -487,9 +495,11 @@
       </div>
     </div>
       
-    <div class="hand" id="player-hand">
-        <!-- Player's hand will be rendered here -->
+    <div id="player-action-row">
+      <div class="hand" id="player-hand">
+          <!-- Player's hand will be rendered here -->
       </div>
+      <button id="toggle-log-btn" class="btn">Toggle Log</button>
     </div>
     
     <div class="controls">
