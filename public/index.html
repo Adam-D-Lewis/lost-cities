@@ -807,6 +807,20 @@
           }
           cardEl.classList.add('theme-' + card.color); // Add theme class for pattern
           cardEl.style.backgroundColor = getColorCode(color);
+
+          const defaultCardWidth = 40; // From .card CSS
+          const defaultCardHeight = 45; // From .card CSS
+          const originalVerticalStep = 28;
+          
+          const expeditionCardMaxWidth = playerColumnWidth / 3;
+          const targetWidth = Math.max(10, Math.min(expeditionCardMaxWidth, defaultCardWidth)); // Ensure a minimum width
+          const targetHeight = targetWidth * (defaultCardHeight / defaultCardWidth);
+
+          cardEl.style.width = targetWidth + 'px';
+          cardEl.style.height = targetHeight + 'px';
+          // Scale font size proportionally. 1em in .card-value will be relative to this.
+          // If targetWidth is half of default, font-size becomes 50%.
+          cardEl.style.fontSize = (targetWidth / defaultCardWidth) * 100 + '%';
           
           const cardContent = card.value === 0 ? '💰' : card.value;
 
@@ -821,7 +835,9 @@
 
           cardEl.style.position = 'absolute';
           const playerCardIndex = playerExpEl.childNodes.length; // Index before appending
-          const verticalOffsetPlayer = playerCardIndex * 28; // Increased step for less overlap
+          // Adjust vertical step proportionally to new card height
+          const verticalStepFactor = originalVerticalStep / defaultCardHeight;
+          const verticalOffsetPlayer = playerCardIndex * (targetHeight * verticalStepFactor);
           
           // Determine horizontal offset based on card index for left-middle-right-middle pattern
           let horizontalOffsetPlayer;
@@ -856,7 +872,20 @@
           }
           cardEl.classList.add('theme-' + card.color); // Add theme class for pattern
           cardEl.style.backgroundColor = getColorCode(color);
-          
+
+          const defaultCardWidth = 40; // From .card CSS
+          const defaultCardHeight = 45; // From .card CSS
+          const originalVerticalStep = 28;
+
+          const expeditionCardMaxWidth = opponentColumnWidth / 3;
+          const targetWidth = Math.max(10, Math.min(expeditionCardMaxWidth, defaultCardWidth)); // Ensure a minimum width
+          const targetHeight = targetWidth * (defaultCardHeight / defaultCardWidth);
+
+          cardEl.style.width = targetWidth + 'px';
+          cardEl.style.height = targetHeight + 'px';
+          // Scale font size proportionally
+          cardEl.style.fontSize = (targetWidth / defaultCardWidth) * 100 + '%';
+
           const cardContent = card.value === 0 ? '💰' : card.value;
 
           const valueCenterEl = document.createElement('div');
@@ -870,7 +899,9 @@
 
           cardEl.style.position = 'absolute';
           const opponentCardIndex = opponentExpEl.childNodes.length; // Index before appending
-          const verticalOffsetOpponent = opponentCardIndex * 28; // Increased step for less overlap
+          // Adjust vertical step proportionally to new card height
+          const verticalStepFactor = originalVerticalStep / defaultCardHeight;
+          const verticalOffsetOpponent = opponentCardIndex * (targetHeight * verticalStepFactor);
           
           // Determine horizontal offset based on card index for left-middle-right-middle pattern
           let horizontalOffsetOpponent;
