@@ -56,7 +56,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 4px rgba(93, 156, 236, 0.2); /* Glow effect */
       transform: translateY(-3px);
     }
-    /* Removed .color-scores and .color-score-item styles */
     .column-color-score {
       font-size: 1em; /* Slightly larger for better visibility */
       font-weight: 700; /* Bold */
@@ -75,8 +74,6 @@
       gap: 10px; /* Reduced gap */
       margin-bottom: 10px; /* Reduced margin */
     }
-    /* .play-area styles removed */
-    /* .expedition-area styles removed (or will be implicitly covered by .color-column structure) */
     .hand {
       background-color: rgba(0, 0, 0, 0.05); /* More subtle background */
       padding: 15px; 
@@ -130,7 +127,6 @@
       transform: translateY(-6px) scale(1.03);
       box-shadow: 0 10px 15px rgba(0,0,0,0.12), 0 4px 6px rgba(0,0,0,0.1);
     }
-    /* Card background colors will be set by JS or specific classes like .card.back */
     /* Text color for specific card backgrounds */
     .card.white, .card.yellow {
       color: #333; /* Dark text for light card backgrounds */
@@ -233,14 +229,11 @@
       text-align: center;
     }
     .deck-count {
-      /* position: absolute; bottom: -15px; */ /* Re-evaluate if needed, for now simpler */
       width: 100%;
       text-align: center;
       font-weight: bold;
       margin-top: 5px; /* Add some space if not absolutely positioned */
     }
-    /* .opponent-area, .player-area styles removed */
-    /* .area-label styles removed (labels will be per expedition/discard pile) */
 
     /* New styles for column layout */
     #game-columns-container {
@@ -367,8 +360,6 @@
       position: relative; /* Establish stacking context */
       z-index: 1; /* Ensure it's above the ::before pseudo-element */
     }
-    /* .card-value-corner, .card-value-top-left, .card-value-bottom-right styles removed */
-    /* .card-suit styles removed as it's not used */
     .empty-discard-text {
       font-size: 0.9em; /* Smaller font for "Discard" text */
       line-height: normal; /* Ensure proper vertical alignment */
@@ -429,7 +420,6 @@
     <div class="input-group">
       <label for="serverAddress">Server Address:</label>
       <input type="text" id="serverAddress" placeholder="Enter server address (e.g., http://192.168.1.100:3000)">
-      <p id="local-ip"></p>
     </div>
     
     <div class="input-group">
@@ -446,12 +436,10 @@
       <div id="player-score" class="score-card">
         <h3 id="player-name">You: 0</h3>
         <p>Total Score: <span id="player-score-value">0</span></p>
-        <!-- Removed player-color-scores div -->
       </div>
       <div id="opponent-score" class="score-card">
         <h3 id="opponent-name">Opponent: 0</h3>
         <p>Total Score: <span id="opponent-score-value">0</span></p>
-        <!-- Removed opponent-color-scores div -->
       </div>
     </div>
 
@@ -543,9 +531,6 @@
     const createGameBtn = document.getElementById('createGame');
     const joinGameBtn = document.getElementById('joinGame');
     const playerHandEl = document.getElementById('player-hand');
-    // const playerExpeditionsEl = document.getElementById('player-expeditions'); // Removed
-    // const opponentExpeditionsEl = document.getElementById('opponent-expeditions'); // Removed
-    // const discardPilesEl = document.getElementById('discard-piles'); // Removed
     const deckEl = document.getElementById('deck');
     const deckCountEl = document.getElementById('deck-count');
     const playCardBtn = document.getElementById('play-card');
@@ -558,11 +543,7 @@
     const opponentNameEl = document.getElementById('opponent-name');
     const notificationEl = document.getElementById('notification');
     const historyLogEl = document.getElementById('history-log');
-    const localIpEl = document.getElementById('local-ip');
     const serverInfoEl = document.getElementById('server-info');
-
-    // Get local IP address to help setup
-    // This function remains the same, but its call is moved to after DOM content loaded.
 
     // Show notification
     function showNotification(message) {
@@ -590,9 +571,6 @@
       renderDiscardPiles(); // Render initial state of discard piles
     }
 
-    // initializeExpeditionAreas function removed
-    // initializeDiscardPiles function removed
-
     // Render the game state
     function createBoardLayout() {
       const colors = ['red', 'green', 'blue', 'white', 'yellow'];
@@ -602,7 +580,6 @@
       colors.forEach(color => {
         const columnEl = document.createElement('div');
         columnEl.className = 'color-column theme-' + color; // Apply theme class
-        // columnEl.style.backgroundColor = getPastelColorCode(color); // Removed: background now handled by CSS theme class
 
         // 1. Opponent's Expedition Area
         const opponentExpeditionContainer = document.createElement('div');
@@ -610,11 +587,6 @@
         
         const opponentLabel = document.createElement('div');
         opponentLabel.className = 'expedition-label';
-        // const opponentColorIndicator = document.createElement('span'); // Removed
-        // opponentColorIndicator.className = 'color-indicator'; // Removed
-        // opponentColorIndicator.style.backgroundColor = getColorCode(color); // Removed
-        // opponentLabel.appendChild(opponentColorIndicator); // Removed
-        // opponentLabel.appendChild(document.createTextNode(`Opponent ${capitalizeFirstLetter(color)}`)); 
         
         const opponentCardsEl = document.createElement('div');
         opponentCardsEl.className = 'expedition-cards';
@@ -643,7 +615,6 @@
         // The content of discardCardEl (empty state or top card) is handled by renderDiscardPiles
         discardCardEl.addEventListener('click', () => selectDiscardTarget(color));
 
-        // discardPileContainer.appendChild(discardLabel); // Removed discard label
         discardPileContainer.appendChild(discardCardEl);
         columnEl.appendChild(discardPileContainer);
 
@@ -660,11 +631,6 @@
         
         const playerLabel = document.createElement('div');
         playerLabel.className = 'expedition-label';
-        // const playerColorIndicator = document.createElement('span'); // Removed
-        // playerColorIndicator.className = 'color-indicator'; // Removed
-        // playerColorIndicator.style.backgroundColor = getColorCode(color); // Removed
-        // playerLabel.appendChild(playerColorIndicator); // Removed
-        // playerLabel.appendChild(document.createTextNode(`Your ${capitalizeFirstLetter(color)}`));
 
         const playerCardsEl = document.createElement('div');
         playerCardsEl.className = 'expedition-cards';
@@ -1147,17 +1113,6 @@
       return colorCodes[color] || '#9E9E9E'; // Default to a mid-grey
     }
 
-    function getPastelColorCode(color) {
-      const pastelColorCodes = {
-        red: '#FFEBEE',     // Light Red
-        green: '#E8F5E9',   // Light Green
-        blue: '#E3F2FD',    // Light Blue
-        white: '#FAFAFA',   // Very Light Grey (almost white)
-        yellow: '#FFFDE7'   // Light Yellow
-      };
-      return pastelColorCodes[color] || '#F5F5F5'; // Default to a very light gray
-    }
-
     // Socket event handlers
     function setupSocketEvents() {
       socket.on('connect', () => {
@@ -1181,8 +1136,6 @@
         console.log('DEBUG: Updated opponentScoreDetails:', gameState.opponentScoreDetails);
         renderGameState();
       });
-
-      // Removed 'reconnected' event handler
       
       socket.on('playerJoined', (data) => {
         // data.playerId is persistentPlayerId
@@ -1254,8 +1207,6 @@
         // Consider clearing gameId to prevent accidental reuse if not starting fresh
         gameState.gameId = null; 
       });
-
-      // Removed 'playerReconnected' event handler
       
       socket.on('gameOver', (data) => {
         // data.scores keys are persistentPlayerIds
@@ -1362,8 +1313,6 @@
         socket.on('gameCreated', (data) => {
           gameState.playerId = data.playerId; // persistentPlayerId
           gameState.gameId = data.gameId;
-          // localStorage.setItem('lostCitiesGameId', data.gameId); // Removed
-          // localStorage.setItem('lostCitiesPlayerId', data.playerId); // Removed
           localStorage.setItem('lostCitiesPlayerName', gameState.playerName); // Keep for convenience
           initializeGame();
           addToHistory('Game created. Waiting for opponent...');
@@ -1374,8 +1323,6 @@
           gameState.playerId = data.playerId; // persistentPlayerId
           gameState.gameId = data.gameId;
           gameState.opponentName = data.hostName;
-          // localStorage.setItem('lostCitiesGameId', data.gameId); // Removed
-          // localStorage.setItem('lostCitiesPlayerId', data.playerId); // Removed
           localStorage.setItem('lostCitiesPlayerName', gameState.playerName); // Keep for convenience
           initializeGame();
           addToHistory(`Joined game hosted by ${data.hostName}`);
@@ -1399,8 +1346,6 @@
 
     // Initial page load logic
     document.addEventListener('DOMContentLoaded', () => {
-      // getLocalIpAddress(); // This function is server-side, remove call from client
-
       // Load only player name and server address from localStorage
       const storedPlayerName = localStorage.getItem('lostCitiesPlayerName');
       const serverAddress = localStorage.getItem('lostCitiesServerAddress') || 'http://192.168.1.114:3000';
