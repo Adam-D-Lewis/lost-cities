@@ -349,35 +349,22 @@
       z-index: 0;
     }
 
-.deck-area {
+    .score-and-deck-row {
       display: flex;
-      flex-direction: column;
-      align-items: center; /* Center items horizontally */
-      justify-content: space-between; /* Distribute content to fill the column height */
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
       padding: 10px;
-      min-width: 60px; /* Reduced for mobile */
-      width: 100%; /* Full width on mobile */
-      height: 100%; 
-      min-height: 200px; /* Reduced for mobile */
-      box-sizing: border-box; /* Include padding in height calculation */
-      order: -1; /* Place deck area at the top on mobile */
-      margin-bottom: 10px; /* Add space below deck area */
-    }
-    .deck-area-spacer {
-      flex-grow: 1; /* Allows the spacer to take up available space */
-      min-height: 50px; /* Minimum height to ensure some spacing even when content is minimal */
-    }
-    /* Position the deck to align with discard piles */
-    .deck-area .deck {
-      margin-top: 0; /* Reset margin for mobile layout */
-    }
-    .deck-area .score-card { /* Style for opponent's score card in deck area */
       width: 100%;
-      margin-bottom: 10px;
       box-sizing: border-box;
     }
-    .deck-area .deck {
-      /* margin-top and margin-bottom removed, spacers will control positioning */
+    .score-and-deck-row .score-card {
+      width: 30%;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .score-and-deck-row .deck {
+      margin: 0;
     }
     #player-info-in-deck-area { /* Now also a .score-card */
       /* text-align, font-weight, font-size, color are handled by .score-card or internal h3/p */
@@ -515,27 +502,26 @@
       <p>Game started. Waiting for players...</p>
     </div>
     
+    <div class="score-and-deck-row">
+      <div id="opponent-score" class="score-card">
+        <h3 id="opponent-name">Opponent: 0</h3>
+        <p>Score: <span id="opponent-score-value">0</span></p>
+      </div>
+      <div class="deck" id="deck">
+        <div class="card back">
+          <div class="card-value">LC</div>
+        </div>
+        <div class="deck-count" id="deck-count">60</div>
+      </div>
+      <div id="player-info-in-deck-area" class="score-card">
+        <h3 id="player-name-in-deck-area">You</h3>
+        <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
+      </div>
+    </div>
+    
     <div class="board">
       <div id="game-columns-container">
         <!-- Color columns will be dynamically generated here by JavaScript -->
-      </div>
-      <div class="deck-area">
-        <div id="opponent-score" class="score-card">
-          <h3 id="opponent-name">Opponent: 0</h3>
-          <p>Score: <span id="opponent-score-value">0</span></p>
-        </div>
-        <div class="deck-area-spacer"></div>
-        <div class="deck" id="deck">
-          <div class="card back">
-            <div class="card-value">LC</div>
-          </div>
-          <div class="deck-count" id="deck-count">60</div>
-        </div>
-        <div class="deck-area-spacer"></div>
-        <div id="player-info-in-deck-area" class="score-card">
-          <h3 id="player-name-in-deck-area">You</h3>
-          <p>Score: <span id="player-score-value-in-deck-area">0</span></p>
-        </div>
       </div>
     </div>
       
@@ -948,7 +934,6 @@
       if (playerNameInDeckAreaEl) playerNameInDeckAreaEl.textContent = gameState.playerName || 'You';
       if (playerScoreValueInDeckAreaEl) playerScoreValueInDeckAreaEl.textContent = gameState.playerScore;
       
-      // opponentNameEl and opponentScoreEl are still valid for the moved card
       if (opponentNameEl) opponentNameEl.textContent = `${gameState.opponentName || 'Opponent'}`;
       if (opponentScoreEl) opponentScoreEl.textContent = gameState.opponentScore;
 
@@ -971,16 +956,17 @@
 
     function updateGameStatus() {
       const opponentScoreCard = document.getElementById('opponent-score');
+      const playerScoreCard = document.getElementById('player-info-in-deck-area');
       
-      // playerScoreCard is removed, so no active class for it.
       opponentScoreCard.classList.remove('active');
+      playerScoreCard.classList.remove('active');
       
       if (gameState.gamePhase === 'waiting') {
         gameStatus.textContent = 'Waiting for opponent...';
       } else if (gameState.gamePhase === 'gameOver') {
         gameStatus.textContent = 'Game Over!';
       } else if (gameState.currentTurn === gameState.playerId) {
-        // No player score card to highlight, gameStatus text indicates turn.
+        playerScoreCard.classList.add('active');
         
         if (gameState.gamePhase === 'selectCard') {
           if (gameState.selectedCard !== null) {
@@ -1470,12 +1456,18 @@
     function adjustLayoutForScreenSize() {
       const isMobile = window.innerWidth < 768;
       const gameColumnsContainer = document.getElementById('game-columns-container');
-      const deckArea = document.querySelector('.deck-area');
+      const scoreAndDeckRow = document.querySelector('.score-and-deck-row');
       
       if (isMobile) {
         // Mobile layout adjustments
         gameColumnsContainer.style.width = '100%';
-        deckArea.style.width = '100%';
+        scoreAndDeckRow.style.flexDirection = 'column';
+        scoreAndDeckRow.style.gap = '10px';
+        
+        // Make score cards full width on mobile
+        document.querySelectorAll('.score-and-deck-row .score-card').forEach(card => {
+          card.style.width = '100%';
+        });
         
         // Adjust card positioning for smaller screens
         document.querySelectorAll('.expedition-cards .card').forEach(card => {
@@ -1498,7 +1490,13 @@
       } else {
         // Desktop layout adjustments
         gameColumnsContainer.style.width = '';
-        deckArea.style.width = '';
+        scoreAndDeckRow.style.flexDirection = '';
+        scoreAndDeckRow.style.gap = '';
+        
+        // Reset score card width for desktop
+        document.querySelectorAll('.score-and-deck-row .score-card').forEach(card => {
+          card.style.width = '30%';
+        });
       }
     }
 
