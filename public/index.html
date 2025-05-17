@@ -1167,63 +1167,18 @@
       });
       
       socket.on('gameState', (state) => {
-        // Update game state
-        // Ensure playerId from localStorage is preferred if this is an initial load/reconnect
-        const localPId = localStorage.getItem('lostCitiesPlayerId');
-        gameState = {...gameState, ...state }; // Merge state from server. gameState now has the latest.
+        // Update game state by merging new state from server.
+        // Properties like playerScore, playerScoreDetails, opponentScore, and opponentScoreDetails
+        // will be directly updated from the 'state' object if provided by the server.
+        gameState = { ...gameState, ...state };
 
-        const currentPlayerId = gameState.playerId;
-        let opponentPlayerId = null;
-        if (gameState.players && currentPlayerId) {
-          opponentPlayerId = Object.keys(gameState.players).find(id => id !== currentPlayerId);
-        }
-
-        // Player scores processing
-        // gameState already has data from ...state spread.
-        // Prioritize data from 'scores' object if it's valid and contains details.
-        if (gameState.scores && gameState.scores[currentPlayerId]) {
-          if (gameState.scores[currentPlayerId].total !== undefined) {
-            gameState.playerScore = gameState.scores[currentPlayerId].total;
-          }
-          // Only update from scores.details if it's actually defined, otherwise keep what came from flat state.playerScoreDetails
-          if (gameState.scores[currentPlayerId].details !== undefined) {
-            gameState.playerScoreDetails = gameState.scores[currentPlayerId].details;
-          }
-        }
-        // Defaulting: If after all attempts, values are still undefined, apply defaults.
-        if (gameState.playerScore === undefined) {
-          gameState.playerScore = 0;
-        }
-        if (gameState.playerScoreDetails === undefined) {
-          // This means neither flat state.playerScoreDetails nor nested state.scores.pid.details was valid.
-          gameState.playerScoreDetails = { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
-        }
-
-        // Opponent scores processing
-        if (opponentPlayerId && gameState.scores && gameState.scores[opponentPlayerId]) {
-          if (gameState.scores[opponentPlayerId].total !== undefined) {
-            gameState.opponentScore = gameState.scores[opponentPlayerId].total;
-          }
-          // Only update from scores.details if it's actually defined
-          if (gameState.scores[opponentPlayerId].details !== undefined) {
-            gameState.opponentScoreDetails = gameState.scores[opponentPlayerId].details;
-          }
-        }
-        // Defaulting for opponent
-        if (gameState.opponentScore === undefined) {
-          gameState.opponentScore = 0;
-        }
-        if (gameState.opponentScoreDetails === undefined) {
-          gameState.opponentScoreDetails = { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
-        }
+        // Ensure details objects are initialized if not provided (should be by server now)
+        gameState.playerScoreDetails = gameState.playerScoreDetails || { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
+        gameState.opponentScoreDetails = gameState.opponentScoreDetails || { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
         
-        if (localPId && (!gameState.playerId || gameState.playerId !== localPId)) {
-            // This case might occur if server sends state before reconnected event fully sets client's view
-            // Or if server state's playerId is somehow different. Prioritize our known persistent ID.
-            // However, the server should be authoritative on game state.
-            // The key is that gameState.playerId on client should be the persistentId.
-        }
         console.log(`DEBUG: socket.on('gameState') - Received gamePhase: ${state.gamePhase}, currentTurn: ${state.currentTurn}, client's playerId: ${gameState.playerId}`);
+        console.log('DEBUG: Updated playerScoreDetails:', gameState.playerScoreDetails);
+        console.log('DEBUG: Updated opponentScoreDetails:', gameState.opponentScoreDetails);
         renderGameState();
       });
 

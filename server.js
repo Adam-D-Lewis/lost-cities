@@ -80,43 +80,42 @@ function dealHand(deck, numCards = 8) {
 
 function calculateScore(expeditions) {
   let totalScore = 0;
-  
-  // Calculate score for each expedition
+  const details = { red: 0, green: 0, blue: 0, white: 0, yellow: 0 };
+
   Object.keys(expeditions).forEach(color => {
     const expedition = expeditions[color];
-    
-    // Skip empty expeditions
+    let expeditionScore = 0;
+
     if (expedition.length === 0) {
+      details[color] = 0;
       return;
     }
-    
-    let score = -20; // Starting cost for expedition
+
+    expeditionScore = -20; // Starting cost for expedition
     let multiplier = 1;
-    
-    // Calculate score for each card
+
     expedition.forEach(card => {
-      if (card.value === 0) {
-        // Investment card (wager)
+      if (card.value === 0) { // Investment card
         multiplier++;
-      } else {
-        // Number card
-        score += card.value;
+      } else { // Number card
+        expeditionScore += card.value;
       }
     });
-    
-    // Add expedition bonus if 8 or more cards
+
     if (expedition.length >= 8) {
-      score += 20;
+      expeditionScore += 20; // Expedition bonus
     }
+
+    expeditionScore *= multiplier;
     
-    // Apply multiplier
-    score *= multiplier;
-    
-    // Add to total score
-    totalScore += score;
+    // Ensure score is not less than 0 after multiplier if initial sum was negative (e.g. -20 * 1)
+    // However, the rules imply that the cost is part of the sum before multiplication.
+    // E.g. (-20 + 5) * 2 = -30. If only one wager, (-20) * 2 = -40. This seems correct.
+    details[color] = expeditionScore;
+    totalScore += expeditionScore;
   });
-  
-  return totalScore;
+
+  return { total: totalScore, details };
 }
 
 function isGameOver(gameState) {
@@ -132,6 +131,11 @@ function getGameStateForPlayer(gameId, playerId) {
 
   const opponentId = Object.keys(game.players).find(id => id !== playerId);
   const opponentState = opponentId ? game.players[opponentId] : null;
+
+  const playerScoreData = calculateScore(playerState.expeditions);
+  const opponentScoreData = opponentState 
+    ? calculateScore(opponentState.expeditions) 
+    : { total: 0, details: { red: 0, green: 0, blue: 0, white: 0, yellow: 0 } };
   
   return {
     currentTurn: game.currentTurn, // This will be a persistentPlayerId
@@ -141,8 +145,10 @@ function getGameStateForPlayer(gameId, playerId) {
     opponentExpeditions: opponentState ? opponentState.expeditions : {},
     discardPiles: game.discardPiles,
     deckCount: game.deck.length,
-    playerScore: calculateScore(playerState.expeditions),
-    opponentScore: opponentState ? calculateScore(opponentState.expeditions) : 0,
+    playerScore: playerScoreData.total,
+    playerScoreDetails: playerScoreData.details,
+    opponentScore: opponentScoreData.total,
+    opponentScoreDetails: opponentScoreData.details,
     playerName: playerState.name,
     opponentName: opponentState ? opponentState.name : 'Opponent'
     // Note: The client's own persistentPlayerId is already known by the client or sent during join/create/reconnect.
