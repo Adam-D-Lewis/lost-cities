@@ -467,10 +467,10 @@
     </div>
     
     <div class="controls">
-      <button id="play-card" class="btn" disabled>Play Card</button>
-      <button id="discard-card" class="btn" disabled>Discard Card</button>
-      <button id="draw-deck" class="btn" disabled>Draw from Deck</button>
-      <button id="draw-discard" class="btn" disabled>Draw from Discard</button>
+      <button id="play-card" class="btn">Play Card</button>
+      <button id="discard-card" class="btn">Discard Card</button>
+      <button id="draw-deck" class="btn">Draw from Deck</button>
+      <div id="draw-discard-buttons-container"></div>
     </div>
 
     <div class="server-info" id="server-info"></div>
@@ -536,7 +536,7 @@
     const playCardBtn = document.getElementById('play-card');
     const discardCardBtn = document.getElementById('discard-card');
     const drawDeckBtn = document.getElementById('draw-deck');
-    const drawDiscardBtn = document.getElementById('draw-discard');
+    const drawDiscardButtonsContainerEl = document.getElementById('draw-discard-buttons-container');
     const playerScoreEl = document.getElementById('player-score-value');
     const opponentScoreEl = document.getElementById('opponent-score-value');
     const playerNameEl = document.getElementById('player-name');
@@ -917,34 +917,39 @@
     }
 
     function updateControls() {
+      // Hide all buttons initially
+      playCardBtn.style.display = 'none';
+      discardCardBtn.style.display = 'none';
+      drawDeckBtn.style.display = 'none';
+      drawDiscardButtonsContainerEl.innerHTML = ''; // Clear dynamic buttons
+
       const isPlayerTurn = gameState.currentTurn === gameState.playerId;
       const cardSelected = gameState.selectedCard !== null;
-      const targetSelected = gameState.selectedTarget !== null;
+      // targetSelected is used by updateGameStatus, so it's still relevant if calculated.
+      // const targetSelected = gameState.selectedTarget !== null; 
       const isSelectCardPhase = gameState.gamePhase === 'selectCard';
       const isDrawCardPhase = gameState.gamePhase === 'drawCard';
-      
-      playCardBtn.disabled = !(isPlayerTurn && cardSelected && isSelectCardPhase);
-      // For discardCardBtn: enabled if it's player's turn, card selected, in selectCard phase, AND
-      // (no target is selected OR a discard pile is selected)
-      let canDiscard = false;
-      if (isPlayerTurn && cardSelected && isSelectCardPhase) {
-        // Ensure selectedTarget is a string before calling startsWith if targetSelected is true
-        if (!targetSelected || (targetSelected && typeof gameState.selectedTarget === 'string' && gameState.selectedTarget.startsWith('discard'))) {
-          canDiscard = true;
-        }
+
+      if (isPlayerTurn && isSelectCardPhase && cardSelected) {
+        playCardBtn.style.display = 'inline-block';
+        discardCardBtn.style.display = 'inline-block';
       }
-      discardCardBtn.disabled = !canDiscard;
-      
-      drawDeckBtn.disabled = !(isPlayerTurn && isDrawCardPhase);
-      
-      let canDrawFromDiscard = false;
-      // Check player turn and phase first, then if a target is selected, then if it's a discard pile.
-      if (isPlayerTurn && isDrawCardPhase && targetSelected && typeof gameState.selectedTarget === 'string' && gameState.selectedTarget.startsWith('discard')) {
-        canDrawFromDiscard = true;
+
+      if (isPlayerTurn && isDrawCardPhase) {
+        drawDeckBtn.style.display = 'inline-block';
+
+        const colors = ['red', 'green', 'blue', 'white', 'yellow'];
+        colors.forEach(color => {
+          if (gameState.discardPiles[color] && gameState.discardPiles[color].length > 0) {
+            // Server will validate if this specific card can be drawn (e.g. not just discarded by player)
+            const btn = document.createElement('button');
+            btn.className = 'btn'; // Assumes .btn class has appropriate display like inline-block
+            btn.textContent = `Draw from ${capitalizeFirstLetter(color)} Discard`;
+            btn.addEventListener('click', () => drawFromDiscard(color));
+            drawDiscardButtonsContainerEl.appendChild(btn);
+          }
+        });
       }
-      // For debugging, you might uncomment this log:
-      console.log(`DEBUG: updateControls - DrawDiscard: isPlayerTurn=${isPlayerTurn}, isDrawCardPhase=${isDrawCardPhase}, targetSelected=${targetSelected}, selectedTarget="${gameState.selectedTarget}", typeof selectedTarget="${typeof gameState.selectedTarget}", canDrawFromDiscard=${canDrawFromDiscard}`);
-      drawDiscardBtn.disabled = !canDrawFromDiscard;
     }
 
     // Game actions
@@ -1074,27 +1079,29 @@
       gameState.selectedTarget = null;
     }
 
-    function drawFromDiscard() {
+    function drawFromDiscard(colorToDraw) {
       if (gameState.currentTurn !== gameState.playerId || 
-          gameState.gamePhase !== 'drawCard' ||
-          !gameState.selectedTarget ||
-          !gameState.selectedTarget.startsWith('discard')) {
+          gameState.gamePhase !== 'drawCard') {
+        // Basic phase/turn checks
         return;
       }
       
-      const color = gameState.selectedTarget.split('-')[1];
-      
-      // Check if discard pile has cards
-      if (gameState.discardPiles[color].length === 0) {
-        showNotification(`Discard pile is empty`);
+      // Check if discard pile has cards (this is also checked before creating the button, but good for safety)
+      if (!gameState.discardPiles[colorToDraw] || gameState.discardPiles[colorToDraw].length === 0) {
+        showNotification(`Discard pile for ${colorToDraw} is empty or invalid.`);
         return;
       }
+      
+      // Server will handle the "can't draw what you just discarded" rule.
       
       // Send draw from discard action to server
-      socket.emit('drawCard', { source: 'discard', color: color });
+      socket.emit('drawCard', { source: 'discard', color: colorToDraw });
       
-      // Reset selection
-      gameState.selectedTarget = null;
+      // Reset visual selection if any, especially if the clicked discard pile was selected
+      if (gameState.selectedTarget && gameState.selectedTarget === `discard-${colorToDraw}`) {
+        gameState.selectedTarget = null;
+      }
+      // No need to call renderGameState() here, server response will trigger it.
     }
 
     // Helper functions
@@ -1341,8 +1348,7 @@
     // Draw deck button click handler
     drawDeckBtn.addEventListener('click', drawFromDeck);
     
-    // Draw discard button click handler
-    drawDiscardBtn.addEventListener('click', drawFromDiscard);
+    // Draw discard button click handler (old generic button's listener is removed as button is removed)
 
     // Initial page load logic
     document.addEventListener('DOMContentLoaded', () => {
