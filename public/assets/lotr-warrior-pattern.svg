@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define the pattern that will repeat -->
+  <defs>
+    <pattern id="lotrWarriorPattern" patternUnits="userSpaceOnUse" width="100" height="100">
+      <!-- Background is transparent -->
+      
+      <!-- The One Ring with Elvish script suggestion -->
+      <circle cx="50" cy="50" r="15" fill="none" stroke="#000000" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="12" fill="none" stroke="#000000" stroke-width="0.8"/>
+      <path d="M42,45 L44,45 M46,44 L47,44 M49,43.5 L51,43.5 M53,44 L54,44 M56,45 L58,45" stroke="#000000" stroke-width="0.8" fill="none"/>
+      <path d="M42,55 L44,55 M46,56 L47,56 M49,56.5 L51,56.5 M53,56 L54,56 M56,55 L58,55" stroke="#000000" stroke-width="0.8" fill="none"/>
+      
+      <!-- Gondorian Helmet -->
+      <path d="M15,15 Q20,5 25,15 L25,25 Q20,27 15,25 Z" fill="none" stroke="#000000" stroke-width="1.2"/>
+      <path d="M17,15 L23,15" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M20,15 L20,10 L20,5" fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Rohirrim Horse Symbol -->
+      <path d="M80,20 Q85,15 87,20 L89,18 L90,20 L88,22 Q89,25 87,25 L85,28 L82,25 Q78,24 78,20 Z" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M87,20 L85,16" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Elven Leaf Brooch -->
+      <path d="M15,70 Q20,65 25,70 Q20,80 15,70 Z" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M20,70 L20,75" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Crossed Swords -->
+      <path d="M75,75 L85,65 M85,75 L75,65" fill="none" stroke="#000000" stroke-width="1.5"/>
+      <path d="M77,67 L77,68 M83,67 L83,68" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M80,70 L81,71 M79,70 L78,71" fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Dwarven Axe -->
+      <path d="M30,40 L35,35 L40,40 L35,45 Z" fill="none" stroke="#000000" stroke-width="1.2"/>
+      <path d="M35,40 L35,50" fill="none" stroke="#000000" stroke-width="1.2"/>
+      <path d="M33,42 L37,38" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Elvish Bow and Arrow -->
+      <path d="M60,30 Q65,25 70,30 Q65,35 60,30" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M65,25 L65,35" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Shield of Gondor (White Tree) -->
+      <path d="M15,42 Q17,35 20,42" fill="none" stroke="#000000" stroke-width="0.8"/>
+      <path d="M20,42 Q18,37 16,42" fill="none" stroke="#000000" stroke-width="0.8"/>
+      <path d="M18,35 L18,42" fill="none" stroke="#000000" stroke-width="0.8"/>
+      <path d="M15,45 Q17.5,48 20,45 Z" fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Uruk-hai Hand Print -->
+      <path d="M90,45 L93,42 L95,45 L97,42 L99,45" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M95,45 L95,50" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M95,50 Q92,55 95,55" fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Chain Mail Pattern -->
+      <path d="M5,85 Q7,87 9,85 Q11,87 13,85" fill="none" stroke="#000000" stroke-width="0.8"/>
+      <path d="M5,89 Q7,91 9,89 Q11,91 13,89" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Hobbit Sword Sting -->
+      <path d="M40,80 L50,80 M45,80 L45,90" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M42,80 L48,80" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Eye of Sauron simplified -->
+      <ellipse cx="90" cy="85" rx="5" ry="8" fill="none" stroke="#000000" stroke-width="1"/>
+      <ellipse cx="90" cy="85" rx="2" ry="3" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Dwarven Runes -->
+      <path d="M5,5 L5,10 M7,5 L7,10 M5,7.5 L7,7.5" fill="none" stroke="#000000" stroke-width="0.8"/>
+      <path d="M10,5 L10,10 M12,5 L10,7.5 L12,10" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Moria Gate Pattern -->
+      <path d="M55,90 Q60,85 65,90 Q60,95 55,90 Z" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M60,85 L60,95" fill="none" stroke="#000000" stroke-width="0.8"/>
+      <path d="M57,87 L63,87" fill="none" stroke="#000000" stroke-width="0.8"/>
+      <path d="M57,93 L63,93" fill="none" stroke="#000000" stroke-width="0.8"/>
+    </pattern>
+  </defs>
+  
+  <!-- Apply the pattern to a rectangle covering the whole SVG -->
+  <rect width="400" height="400" fill="url(#lotrWarriorPattern)" />
+</svg>

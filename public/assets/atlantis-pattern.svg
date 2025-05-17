@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define the pattern that will repeat -->
+  <defs>
+    <pattern id="atlantisPattern" patternUnits="userSpaceOnUse" width="100" height="100">
+      <!-- Background is transparent -->
+      
+      <!-- Concentric circles representing Atlantis' layout -->
+      <circle cx="50" cy="50" r="20" fill="none" stroke="#000000" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="15" fill="none" stroke="#000000" stroke-width="1"/>
+      <circle cx="50" cy="50" r="10" fill="none" stroke="#000000" stroke-width="0.8"/>
+      
+      <!-- Trident symbol -->
+      <path d="M80,15 L80,35 M75,20 L85,20 M77,15 L77,25 M83,15 L83,25" 
+            fill="none" stroke="#000000" stroke-width="1.5"/>
+            
+      <!-- Ancient Greek/Atlantean column -->
+      <path d="M20,15 L20,35 M15,15 L25,15 M15,35 L25,35 M15,17 L25,17 M15,33 L25,33" 
+            fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Wave patterns -->
+      <path d="M0,75 Q10,70 20,75 Q30,80 40,75 Q50,70 60,75 Q70,80 80,75 Q90,70 100,75" 
+            fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M0,85 Q10,80 20,85 Q30,90 40,85 Q50,80 60,85 Q70,90 80,85 Q90,80 100,85" 
+            fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Spiral pattern (common in ancient civilizations) -->
+      <path d="M15,60 Q20,60 20,55 Q20,50 15,50 Q10,50 10,55 Q10,60 15,60 Q15,65 10,65 Q5,65 5,60 Q5,55 10,55" 
+            fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Atlantean crystal or orichalcum symbol -->
+      <polygon points="90,50 85,60 95,60" fill="none" stroke="#000000" stroke-width="1"/>
+      <line x1="90" y1="50" x2="90" y2="65" stroke="#000000" stroke-width="1"/>
+      <line x1="87" y1="55" x2="93" y2="55" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Decorative corner elements - atlantean script-like symbols -->
+      <path d="M5,5 L10,5 M5,7 L8,7 M5,9 L9,9" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M90,5 L95,5 M92,5 L92,9 M90,7 L95,7" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M5,90 L5,95 M7,90 L7,95 M9,92 L5,92" fill="none" stroke="#000000" stroke-width="1"/>
+      <path d="M90,95 L95,90 M92,92 L95,95" fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Fish silhouette -->
+      <path d="M40,40 Q45,35 50,40 L55,37 L55,43 L50,40 Q45,45 40,40 Z" 
+            fill="none" stroke="#000000" stroke-width="1"/>
+      
+      <!-- Atlantean geometric temple shape -->
+      <path d="M70,90 L75,80 L80,90 Z M73,90 L73,95 M77,90 L77,95 M75,80 L75,78" 
+            fill="none" stroke="#000000" stroke-width="1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Apply the pattern to a rectangle covering the whole SVG -->
+  <rect width="400" height="400" fill="url(#atlantisPattern)" />
+</svg>
