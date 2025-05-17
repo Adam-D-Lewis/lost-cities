@@ -614,25 +614,16 @@
         // 2. Discard Pile Area
         const discardPileContainer = document.createElement('div');
         discardPileContainer.className = 'expedition'; 
-
-        const discardLabel = document.createElement('div');
-        discardLabel.className = 'expedition-label';
-        // For discard, use the color indicator as well for consistency // Removed
-        // const discardColorIndicator = document.createElement('span'); // Removed
-        // discardColorIndicator.className = 'color-indicator'; // Removed
-        // discardColorIndicator.style.backgroundColor = getColorCode(color); // Removed
-        // discardLabel.appendChild(discardColorIndicator); // Removed
-        discardLabel.appendChild(document.createTextNode(`Discard`));
         
         const discardCardEl = document.createElement('div');
         discardCardEl.className = 'card'; 
         discardCardEl.classList.add(color); 
         discardCardEl.id = `discard-${color}`;
         discardCardEl.dataset.color = color;
-        discardCardEl.innerHTML = '<div class="card-value">-</div>'; 
+        // The content of discardCardEl (empty state or top card) is handled by renderDiscardPiles
         discardCardEl.addEventListener('click', () => selectDiscardTarget(color));
 
-        discardPileContainer.appendChild(discardLabel);
+        // discardPileContainer.appendChild(discardLabel); // Removed discard label
         discardPileContainer.appendChild(discardCardEl);
         columnEl.appendChild(discardPileContainer);
 
