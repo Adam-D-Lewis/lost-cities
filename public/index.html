@@ -129,7 +129,12 @@
     .card.theme-green::before  { background-image: url('assets/lotr-warrior-pattern.svg'); }
     .card.theme-blue::before   { background-image: url('assets/atlantis-pattern.svg'); }
     .card.theme-white::before  { background-image: url('assets/aztec-pattern.svg'); }
-    .card.theme-yellow::before { background-image: url('assets/egypt-pattern.svg'); }
+    .card.theme-yellow::before { 
+      background-image: url('assets/experimental/Silhouette/anubis-silhouette-clipped.svg'); 
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center; /* Center the image */
+    }
 
     .card:hover {
       transform: translateY(-6px) scale(1.03);
@@ -395,8 +400,8 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: url('assets/egypt-pattern.svg') repeat;
-      background-size: auto;
+      background: url('assets/experimental/Silhouette/anubis-silhouette-clipped.svg') no-repeat center center;
+      background-size: cover;
       opacity: 0.25;
       z-index: 0;
     }
