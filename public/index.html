@@ -130,10 +130,10 @@
     .card.theme-blue::before   { background-image: url('assets/atlantis-pattern.svg'); }
     .card.theme-white::before  { background-image: url('assets/aztec-pattern.svg'); }
     .card.theme-yellow::before { 
-      background-image: url('assets/experimental/Silhouette/anubis-silhouette-clipped.svg'); 
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center center; /* Center the image */
+      background-image: url('assets/egypt-pattern.svg'); 
+      background-repeat: repeat; /* Revert to repeat for the card pattern */
+      background-size: auto; /* Revert to auto size for the card pattern */
+      /* background-position is not strictly needed for repeating patterns but doesn't harm */
     }
 
     .card:hover {
