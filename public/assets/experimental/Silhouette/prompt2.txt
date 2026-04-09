@@ -1,0 +1,34 @@
+Art Request: Ancient Egyptian Background for Board game
+
+Theme: Ancient Egyptian, stylized hieroglyphic art
+
+Purpose: Background image for a vertical column on game board
+
+Style: Pure black silhouette of ancient Egyptian culture and/or architecture
+
+Format: art with white background
+
+Resolution: 300 DPI for print quality
+
+Key Elements:
+
+Pure black silhouette of a ancient Egyptian culture and/or architecture
+
+Clean, defined edges.  Make it look somewhat primitive with desert landscape with prominent egyptian inspired architecture and culture visible.  Have a river visible in some aspect of the image as well.
+
+
+
+Notes:
+
+Providing a larger image than specified is acceptable - we can crop as needed
+
+The silhouette should be solid black with no internal details or gradients
+
+This will appear behind gameplay elements, so simplicity is key
+
+The design should maintain visual integrity even when portions are cropped
+
+Don't create many unrelated images.  Could you instead make a single epic scene looking at some epic ancient egyptian inspired city instead?  Make sure there is subject matter in roughly the bottom 70% of the column-like image.  One way to do this might be use a perspective so it's like an image taken from high up looking down on the city or something?
+
+
+Do not generate an SVG. I understand that you may not be able to meet some of the requirements listed above like resolution, etc. It's totally fine! They're just suggestions since I don't know what you can do. Just do your best to create an image like what I've described! You got this! :)

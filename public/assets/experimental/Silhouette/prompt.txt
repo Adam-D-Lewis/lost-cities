@@ -1,0 +1,59 @@
+Art Request: Egyptian Column Background
+
+Theme: Ancient Egyptian, stylized hieroglyphic art
+
+Purpose: Background image for a vertical column on game board
+
+Style: Pure black silhouette of Egyptian deity/figure in hieroglyphic style
+
+Format: Vector art with transparent background (SVG recommended)
+
+Dimensions: (approximately 1:3 ratio), but can be larger for cropping flexibility
+
+Resolution: 300 DPI for print quality
+
+
+
+Key Elements:
+
+Pure black silhouette of an Egyptian deity (such as Anubis, Horus, Bastet, or Thoth)
+
+Clean, defined edges characteristic of hieroglyphic art style
+
+Single, bold figure that reads well at a distance
+
+Strong visual impact with simple, recognizable shapes
+
+
+
+Notes:
+
+Providing a larger image than specified is acceptable - we can crop as needed
+
+The silhouette should be solid black with no internal details or gradients
+
+This will appear behind gameplay elements, so simplicity is key
+
+The design should maintain visual integrity even when portions are cropped
+
+Vector format preferred to allow resizing without loss of quality
+
+Transparent background required to integrate with the game board design
+
+
+
+Recommended Deities for Strong Silhouettes:
+
+Anubis (jackal-headed god) - distinctive profile with pointed ears
+
+Horus (falcon-headed god) - recognizable bird profile
+
+Thoth (ibis-headed god) - unique beak shape creates interesting silhouette
+
+Bastet (cat goddess) - elegant feline profile
+
+Sekhmet (lion-headed goddess) - powerful silhouette with distinctive mane
+
+
+
+DO NOT GENERATE AN SVG! I understand that you may not be able to meet many of the requirements listed above like transparency, resolution, etc. It's totally fine! They're just suggestions since I don't know what you can do. Just do your best to create an image like what I've described! You got this! :)

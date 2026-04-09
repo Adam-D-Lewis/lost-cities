@@ -1,0 +1,13 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="515px" height="1594px" viewBox="0 0 515 1594" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-labelledby="svgTitle svgDesc" role="img">
+  <title id="svgTitle">Anubis Silhouette - Egyptian Hieroglyphic Style</title>
+  <desc id="svgDesc">
+    A pure black silhouette of the Egyptian deity Anubis, depicted in a stylized hieroglyphic art style.
+    Anubis is shown standing, facing left, with characteristic features such as the jackal head with tall, pointed ears and a long snout,
+    a human-like body adorned with a kilt, and arms positioned by his sides. The figure is designed to be tall and slender,
+    suitable for a vertical column. The background is transparent.
+  </desc>
+
+  <path fill="black" d="
+    M 285 100 L 310 220 C 300 230 290 230 280 220 L 270 230 L 240 100 L 215 225 L 210 300 C 200 380 205 440 225 500 L 220 700 L 215 880 L 205 1100 L 200 1300 L 195 1400 L 235 1415 L 240 1405 L 250 1150 L 255 900 L 260 1150 L 265 1405 L 305 1415 L 310 1400 L 300 1100 L 290 880 L 285 700 L 295 520 L 285 510 L 280 650 L 285 800 L 275 805 L 265 795 L 270 655 L 275 515 L 275 480 L 340 450 L 420 380 C 410 360 390 350 380 340 L 320 300 L 285 225 Z "/>
+</svg>
